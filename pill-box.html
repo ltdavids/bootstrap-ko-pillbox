@@ -1,0 +1,24 @@
+﻿<div class="pillbox">
+    <div class="selections dropdown-toggle" data-toggle="dropdown" data-bind="style:{'max-height':height}, css:{focus:inFocus}">
+        <ul class="selected-options">
+            <!-- ko foreach:selectedOptions -->
+            <li class="selected-option" data-bind="visible:$parent.showPillbox">
+                <div class="btn btn-xs btn-default"><a data-bind="click:$parent.removeItem">×</a><span data-bind="text:text"></span></div>
+            </li>
+            <!-- /ko-->
+        </ul>
+    </div>
+    
+    <ul class="dropdown-menu">
+        <li>
+            <ul class="options" data-bind="style:{'max-height':dropheight}">
+                <!-- ko foreach:options -->
+                <li  data-bind=" css:{selected:selected, highlight:highlight}, click:$parent.handleClick, event:{ mouseover:$parent.hoverItem}"></li>
+                <!-- /ko -->
+            </ul>
+        </li>
+    </ul>
+
+</div>
+    
+<span data-bind="template: { afterRender: init }"></span>
