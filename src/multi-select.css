@@ -29,6 +29,7 @@ pillbox .pillbox .selections ul li.placeholder {
 pillbox .pillbox .selections ul li.padder {
   min-width: 20px;
   padding-left: 0;
+  float: right;
 }
 pillbox .pillbox .selections ul li.padder a {
   cursor: default;

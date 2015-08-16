@@ -7,11 +7,26 @@
  */
 
 define(["knockout", "jquery"], function (ko, $) {
+    $.fn.selectRange = function (start, end) {
+        if (!end) end = start;
+        return this.each(function () {
+            if (this.setSelectionRange) {
+                this.focus();
+                this.setSelectionRange(start, end);
+            } else if (this.createTextRange) {
+                var range = this.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', end);
+                range.moveStart('character', start);
+                range.select();
+            }
+        });
+    };
     function PillBoxFactory(params, componentInfo) {
         var CHARS = new Array("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", " ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "", "", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "", "", "", "", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "+", "", "-", ".", "/", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ";", "=", ",", "-", ".", "/", "`", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "[", "\\", "]", "\"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ")", "!", "@", "#", "$", "%", "^", "&", "*", "(", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ":", "+", "<", "_", ">", "?", "~", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "{", "|", "}", "\"");
         $elem = $(componentInfo.element);
         var template = componentInfo.templateNodes;
-        var itemTemplate = params.itemTemplate;
+        var optionTemplate = params.optionTemplate;
         var optionsText = params.optionsText !== undefined ? params.optionsText : '';
         var optionsPopOver = params.optionsPopOver !== undefined ? params.optionsPopOver : '';
         $elem.find(".selected-options").prepend('<li class="placeholder" data-bind="visible:placeHolderVisible"><span  data-bind="text:placeHolder"></span></li>');
@@ -19,13 +34,21 @@ define(["knockout", "jquery"], function (ko, $) {
         $elem.find(".selected-options").append('<li class="dummy" ><input class="" type="text"  /></li>');
 
       
-        if (itemTemplate) {
-            var _template = $('#' + itemTemplate)[0];
-            if (!_template) {
-                throw ("Invalid template");
+        if (optionTemplate) {
+            var _html = "";
+            if (typeof optionTemplate === 'function') {
+                _html = optionTemplate();
             }
-            var _html = $('#' + itemTemplate)[0].innerHTML;
+            else{
+
+                var _template = $('#' + optionTemplate)[0];
+                if (!_template) {
+                    throw ("Invalid template");
+                }
+                _html = $('#' + optionTemplate)[0].innerHTML;
+            }
             $elem.find(".options>li").append(_html);
+            
         } else {
             $elem.find(".options>li").append('<a><div data-bind="text:' + optionsText + '"></div></a>');
         }
@@ -79,7 +102,7 @@ define(["knockout", "jquery"], function (ko, $) {
             self.showPillbox = ko.observable(params.showPillbox !== undefined ? params.showPillbox : true);
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
             self.optionsPopOver = params.optionsPopOver !== undefined ? params.optionsPopOver : '';
-            self.selectedOptions = params.selectedOptions;
+            self.selectedOptions = params.selectedOptions? params.selectedOptions: ko.observableArray();
             self.caret = ko.observable(0);
             self.inFocus = ko.observable(false);
             self.selStart = -1;
@@ -381,6 +404,9 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.highlightPrevItem();
                     self.cancelKey = true;
                     return false;
+                }else if (e.keyCode == 34) {
+             
+                    return false;
                 }
 
 
@@ -648,7 +674,10 @@ define(["knockout", "jquery"], function (ko, $) {
                     //$("body").on('keydown', onBodyKeyDown);
                 });
                 self.toggle.parent().on('show.bs.dropdown', function (e) {
+                    if (self.element.attr('disabled')){
 
+                        return false;
+                    }
                     var $e = self.element.find('.pillbox');
                     $e.removeClass('dropup');
                     var offset = self.element.offset();
