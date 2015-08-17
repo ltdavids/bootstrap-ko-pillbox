@@ -1,2 +1,2 @@
 # bootstrap-ko-pillbox
-A multi-select implemented as a knockout component using bootstrap
+A multi-select knockout component that plays nice with bootstrap.

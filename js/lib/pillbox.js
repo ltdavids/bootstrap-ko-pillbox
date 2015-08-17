@@ -5,6 +5,62 @@
  *
  * https://github.com/ltdavids/bootstrap-ko-pillbox
  */
+/*! https://mths.be/startswith v0.2.0 by @mathias */
+if (!String.prototype.startsWith) {
+    (function () {
+        'use strict'; // needed to support `apply`/`call` with `undefined`/`null`
+        var defineProperty = (function () {
+            // IE 8 only supports `Object.defineProperty` on DOM elements
+            try {
+                var object = {};
+                var $defineProperty = Object.defineProperty;
+                var result = $defineProperty(object, object, object) && $defineProperty;
+            } catch (error) { }
+            return result;
+        }());
+        var toString = {}.toString;
+        var startsWith = function (search) {
+            if (this == null) {
+                throw TypeError();
+            }
+            var string = String(this);
+            if (search && toString.call(search) == '[object RegExp]') {
+                throw TypeError();
+            }
+            var stringLength = string.length;
+            var searchString = String(search);
+            var searchLength = searchString.length;
+            var position = arguments.length > 1 ? arguments[1] : undefined;
+            // `ToInteger`
+            var pos = position ? Number(position) : 0;
+            if (pos != pos) { // better `isNaN`
+                pos = 0;
+            }
+            var start = Math.min(Math.max(pos, 0), stringLength);
+            // Avoid the `indexOf` call if no match is possible
+            if (searchLength + start > stringLength) {
+                return false;
+            }
+            var index = -1;
+            while (++index < searchLength) {
+                if (string.charCodeAt(start + index) != searchString.charCodeAt(index)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        if (defineProperty) {
+            defineProperty(String.prototype, 'startsWith', {
+                'value': startsWith,
+                'configurable': true,
+                'writable': true
+            });
+        } else {
+            String.prototype.startsWith = startsWith;
+        }
+    }());
+}
+
 
 define(["knockout", "jquery"], function (ko, $) {
     $.fn.selectRange = function (start, end) {
@@ -22,10 +78,12 @@ define(["knockout", "jquery"], function (ko, $) {
             }
         });
     };
+
+
+
     function PillBoxFactory(params, componentInfo) {
         var CHARS = new Array("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", " ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "", "", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "", "", "", "", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "+", "", "-", ".", "/", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ";", "=", ",", "-", ".", "/", "`", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "[", "\\", "]", "\"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ")", "!", "@", "#", "$", "%", "^", "&", "*", "(", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ":", "+", "<", "_", ">", "?", "~", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "{", "|", "}", "\"");
         $elem = $(componentInfo.element);
-        var template = componentInfo.templateNodes;
         var optionTemplate = params.optionTemplate;
         var optionsText = params.optionsText !== undefined ? params.optionsText : '';
         var optionsPopOver = params.optionsPopOver !== undefined ? params.optionsPopOver : '';
@@ -72,7 +130,9 @@ define(["knockout", "jquery"], function (ko, $) {
         };
 
         function getCaret(node) {
-            if (node.selectionStart) {
+            if (node.value.length == 0) {
+                return 0;
+            } else if (node.selectionStart) {
                 return node.selectionStart;
             } else if (!document.selection) {
                 return 0;
@@ -147,19 +207,14 @@ define(["knockout", "jquery"], function (ko, $) {
                 var ht = self.rows() * bHeight ;
                 return ht.toFixed(0) + "px";
             });
-            //self.dropheight = ko.observable(0);
+
             self.dropheight = ko.computed(function () {
                 if (!self.dropdownRows()) {
                     return;
                 }
-
                 return self.dropdownRows() * self.itemHeight() + "px";
             });
-            self.setOptions = function (options) {
-                
-                self.rows(options.rows ? options.rows : undefined);
-                
-            };
+
             self.option = function (name, value) {
                 switch (name.toUpperCase()) {
                     case "ROWS":
@@ -204,25 +259,14 @@ define(["knockout", "jquery"], function (ko, $) {
             self.placeHolderVisible = ko.computed(function () {
                 return self.selectedOptions().length == 0 || (!self.showPillbox());
             });
-            self.extendSelect = function (data, e) {
-                if (self.selStart == -1) {
-                    self.selStart = self.options.indexOf(data);
-                    self.selectItem(data, e);
-                } else {
-                    var _idx = self.options.indexOf(data);
-                    var _st = Math.min(_idx, self.selStart), _end = Math.max(_idx, self.selStart);
-                    for (var i = _st; i <= _end; i++) {
-                        self.selectItem(self.options()[i], e);
-                    }
-                }
-
-            }
+ 
             self.clearSelections = function () {
                 for (var i = 0; i < self.options().length; i++) {
                     if (self.options()[i].selected)
                         self.removeItem(self.options()[i]);
                 }
-            }
+            };
+
             self.selectItem = function (data, e) {
                 if (!data.selected()) {
                     data.selected(true);
@@ -230,7 +274,6 @@ define(["knockout", "jquery"], function (ko, $) {
                         self.remainingOptions.remove(data);
                     }
                     self.selectedOptions.push(data);
-
                 }
             };
 
@@ -238,7 +281,6 @@ define(["knockout", "jquery"], function (ko, $) {
                 
                 if (!data.selected()) {
                    self.selectItem(data,e);
-
                 } else {
                     self.removeItem(data, e);
                 }
@@ -418,6 +460,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 if (self.options().length == 1) {
 
                     if (e.which == 13 || e.which == 9) {
+                        self.clearAll();
                         self.selectItem(self.options()[0]);
                         self.cancelKey = true;
                     } else if (e.which == 27) {
@@ -627,7 +670,6 @@ define(["knockout", "jquery"], function (ko, $) {
                     });
                 }
                 if (self.optionsPopOver) {
-
                     $.each(self.element.find(".options li"), function (key, val) {
                         var d = ko.dataFor(val);
                         $(val).popover({ content: d[optionsPopOver] })
@@ -649,13 +691,11 @@ define(["knockout", "jquery"], function (ko, $) {
                 self.toggle.parent().on('hide.bs.dropdown', function (e) {
                     var $e = self.element.find('.pillbox');
                     $e.removeClass('dropup');
-                   // $('.dummy>input').off('keydown', handleDropDownKeyDown);
                     self.clearAll();
                     self.clearHighlights();
                     self.inKeyBoardMode = false;
                     self.selStart = -1;
                     self.element.find(".dummy>input").focus();
-                    //$("body").off('keydown', onBodyKeyDown);
 
                 });
                 self.toggle.parent().on('shown.bs.dropdown', function (e) {
@@ -667,11 +707,7 @@ define(["knockout", "jquery"], function (ko, $) {
                         $e = $(e.target);
                     if (self.inputEnabled) {
                         $e.find(".search>input")[0].focus();
-                    } else {
-                       // $e.find(".dummy>input")[0].focus();
-                       // $e.find(".dummy>input").on('keydown', handleDropDownKeyDown);
-                    }
-                    //$("body").on('keydown', onBodyKeyDown);
+                    } 
                 });
                 self.toggle.parent().on('show.bs.dropdown', function (e) {
                     if (self.element.attr('disabled')){
