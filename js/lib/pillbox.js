@@ -110,15 +110,11 @@ define(["knockout", "jquery"], function (ko, $) {
         } else {
             $elem.find(".options>li").append('<a><div data-bind="text:' + optionsText + '"></div></a>');
         }
-        if (params.typeAhead !== undefined ? params.typeAhead : false) {
-            $elem.find(".dropdown-menu").prepend('<li class="search"><input class="form-control" type="text"  /></li>');
-        }
 
 
         function swallow(e) {
             if (!e)
                 e = window.event;
-
             //IE9 & Other Browsers
             if (e.stopPropagation) {
                 e.stopPropagation();
@@ -153,42 +149,46 @@ define(["knockout", "jquery"], function (ko, $) {
 
         function vm(params, elem) {
             var self = this;
+            self.id = elem[0].id;
             self.element = elem;
             self.toggle = self.element.find(".dropdown-toggle");
+            self.typeAhead = ko.observable();
             self.cancelKey = false;
             self.suppressKeyUp = false;
             self.inKeyBoardMode = false;
-            self.input = self.element.find(".search>input")[0];
+            self.pillbox = self.element.find('.pillbox');
+            self.typeAhead(params.typeAhead !== undefined ? params.typeAhead : false);
             self.showPillbox = ko.observable(params.showPillbox !== undefined ? params.showPillbox : true);
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
-            self.optionsPopOver = params.optionsPopOver !== undefined ? params.optionsPopOver : '';
+            self.popover = ko.observable(params.popover !== undefined ? params.popover : '');
+            self.popoverTemplate = params.popoverTemplate !== undefined ? params.popoverTemplate : '';
             self.selectedOptions = params.selectedOptions? params.selectedOptions: ko.observableArray();
+            //remainingOptions contains all non selected options
+            self.remainingOptions = ko.observableArray();
             self.caret = ko.observable(0);
             self.inFocus = ko.observable(false);
             self.selStart = -1;
-            self.inputEnabled = params.typeAhead !== undefined ? params.typeAhead : false;
             self.showSelected = params.showSelected !== undefined ? params.showSelected : false;
-            self.scrollbar = params.scrollbar !== undefined ? params.scrollbar : true;
+            self.scrollbar = ko.observable(true);
+            self.scrollbar.subscribe(function (newvalue) {
+                if (!self.scrollbar()) {
+                    self.element.find(".options").addClass("no-scroll");
+                } else{
+                    self.element.find(".options").removeClass("no-scroll");
+                }
+            });
+            
             self.optionValues = params.optionValues;
-            self.searchText = ko.computed(function () {
+
+            self.searchText = function () {
                 if (self.input) {
                     return $(self.input).val().substring(0, self.caret()).toUpperCase();
                 }
-            });
+            };
             self.hintText = ko.observable("");
             self.displayText = ko.observable("");
-            //remainingOptions contains all non selected options
 
-            self.remainingOptions = ko.observableArray(ko.unwrap(params.optionValues).slice(0)
-                .map(function (val) {
-                    val.selected = ko.observable(false);
-                    val.highlight = ko.observable(false);
-                    return val;
-                }));
-
-            self.remainingOptions.sort(function (a, b) {
-                return (a[self.optionsText] < b[self.optionsText]) ? -1 : (a[self.optionsText] > b[self.optionsText]) ? 1 : 0;
-            });
+                       
             //options contains a filtered copy of options;
             self.options = ko.observableArray(ko.unwrap(self.remainingOptions).slice(0));
             self.options.sort(function (a, b) {
@@ -212,8 +212,35 @@ define(["knockout", "jquery"], function (ko, $) {
                 if (!self.dropdownRows()) {
                     return;
                 }
-                return self.dropdownRows() * self.itemHeight() + "px";
+                return self.dropdownRows() * self.itemHeight()-4 + "px";
             });
+
+            self.popoverContent = function (d) {
+                if (self.popover())
+                    if (self.popover().popoverTemplate) {
+                        var _html = "";
+                        if (typeof self.popover().popoverTemplate === 'function') {
+                            _html = self.popover().popoverTemplate();
+                        }
+                        else {
+
+                            var _template = $('#' + self.popover().popoverTemplate)[0];
+                            if (!_template) {
+                                throw ("Invalid template");
+                            }
+                            _html = $('#' + self.popover().popoverTemplate)[0].innerHTML;
+                        }
+
+                    }
+                return (_html);
+            };
+
+            self.resetPopovers = function () {
+                self.element.find(".options li").popover('destroy');
+                if (self.popover()) {
+                    self.element.find(".options li").popover({ html: true, placement: 'right auto', content: self.popoverContent() });
+                }
+            };
 
             self.option = function (name, value) {
                 switch (name.toUpperCase()) {
@@ -224,20 +251,65 @@ define(["knockout", "jquery"], function (ko, $) {
                         self.dropdownRows(parseInt(value));
                         break;
                     case "PLACEHOLDER":
-                        self.placeHolder(value);
+                        if (value !== undefined) {
+                            self.placeHolder(value);
+                        }
+                        return self.placeHolder();
                         break;
                     case "TYPEAHEAD":
-                        self.typeAhead(value);
-                        break;
+                        if (value !== undefined) {
+                            self.typeAhead(value);
+                        }
+                            return self.typeAhead();
+                      
+                            break;
+                        case "SCROLLBAR":
+                            if (value !== undefined) {
+                                self.scrollbar(value);
+                            }
+                            return self.scrollbar();
+
+                            break;
                     case "SHOWSELECTED":
-                        self.showSelected = value;
+                        if (value !== undefined) {
+                            self.showSelected = value;
+                            self.filter();
+                        }
+                        return self.showSelected;
                         break;
                     case "SHOWPILLBOX":
-                        self.showPillbox( value);
+                        if (value !== undefined) {
+                            self.showPillbox(value);
+                        }
+                        return self.showPillbox();
+                    
+                        break;
+                    case "POPOVER":
+                        if (!value) {
+                            self.element.find(".options li").popover('destroy');
+                            self.popover(value);
+                        } else {
+                            self.popover(value);
+                            self.element.find(".options li").popover({ html: true, placement: 'right auto', content: self.popoverContent() });
+                        }
                         break;
                 }
               
             };
+
+            self.typeAhead.subscribe(function (newvalue) {
+                if (newvalue && !(self.element.find(".dropdown-menu").find(".search").length>0)) {
+                    self.element.find(".dropdown-menu").prepend('<li class="search"><input class="form-control" type="text"  /></li>');
+
+                    self.input = self.element.find(".search>input")[0];
+                    self.element.find(".search>input").on('keydown', handleInputKeyDown)
+                        .on('keypress', handleInputKeyPress)
+                        .on('keyup', handleInputKeyUp)
+                        .on('click', function (e) {
+                            swallow(e);
+                        });
+                }
+            });
 
             self.sort = function (array) {
                 array.sort(function (a, b) {
@@ -252,6 +324,7 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.remainingOptions.push(data);
                 }
                 self.clearAll();
+                swallow(e);
             };
 
             self.placeHolder = ko.observable(params.placeHolder ? params.placeHolder : "Choose");
@@ -260,13 +333,6 @@ define(["knockout", "jquery"], function (ko, $) {
                 return self.selectedOptions().length == 0 || (!self.showPillbox());
             });
  
-            self.clearSelections = function () {
-                for (var i = 0; i < self.options().length; i++) {
-                    if (self.options()[i].selected)
-                        self.removeItem(self.options()[i]);
-                }
-            };
-
             self.selectItem = function (data, e) {
                 if (!data.selected()) {
                     data.selected(true);
@@ -278,7 +344,8 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
             self.handleClick = function (data,e) {
-                
+
+                self.showPopOver(data, e);
                 if (!data.selected()) {
                    self.selectItem(data,e);
                 } else {
@@ -289,21 +356,21 @@ define(["knockout", "jquery"], function (ko, $) {
                
              
             }
-            self.searchText.subscribe(function (newvalue) {
-                if (newvalue.length == 0) {
-                    self.lastSingle = '';
-                }
-            });
 
             self.filter = function (val) {
-                if (!self.inputEnabled) {
+                if (!self.typeAhead()) {
                     self.options(self.remainingOptions());
+
+                    self.options.valueHasMutated();
+                    self.options.notifySubscribers();
+                  
                     return;
                 }
                 var _options = self.remainingOptions();
                 if (self.filtering) return;
                 var _search = self.searchText();
-                if (_search) {
+                if (_search)
+                {
                     _options = self.remainingOptions().filter(function (val) {
                         return val[self.optionsText].toUpperCase().startsWith(_search.toUpperCase());
                     });
@@ -324,9 +391,31 @@ define(["knockout", "jquery"], function (ko, $) {
                     }
                     self.sort(_options);
                 }
+               
+
                 self.sort(_options);
                 self.options(_options);
+                self.options.valueHasMutated();
+                self.options.notifySubscribers();
             };
+
+            self.clearSelections = function () {
+                self.options.removeAll();
+                self.remainingOptions(ko.unwrap(params.optionValues).slice(0)
+                .map(function (val) {
+                    val.selected = ko.observable(false);
+                    val.highlight = ko.observable(false);
+                    return val;
+                }));
+                self.remainingOptions.sort(function (a, b) {
+                    return (a[self.optionsText] < b[self.optionsText]) ? -1 : (a[self.optionsText] > b[self.optionsText]) ? 1 : 0;
+                });
+                self.selectedOptions.removeAll();
+                self.filter();
+                self.resetPopovers();
+            };
+
+            self.clearSelections();
 
             self.clearHintText = function () {
                 self.hintText('');
@@ -334,9 +423,11 @@ define(["knockout", "jquery"], function (ko, $) {
                 var s = $(self.input).val().substring(0, pos);
                 $(self.input).val(s);
             };
+
             self.clearHighlights = function () {
                 $.each(self.options(), function (key, val) { val.highlight(false); });
-            }
+            };
+
             self.highlightNextItem = function () {
                 var _next = 0;
                 for (i = 0; i < self.options().length; i++) {
@@ -350,6 +441,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 self.options()[_next].highlight(true);
                 self.scrollTo();
             };
+
             self.highlightPrevItem = function () {
                 var _next = self.options().length - 1;
                 for (i = self.options().length - 1; i >= 0; i--) {
@@ -423,20 +515,17 @@ define(["knockout", "jquery"], function (ko, $) {
                 } else if (e.which == 27) {
 
                     self.clearAll();
-                    self.toggle.trigger('focus');
-                    return self.toggle.trigger('click');
+                    closeDropDown();
 
                 }
                 if (e.which == 9) {
 
                     self.clearAll();
-                    self.toggle.trigger('focus');
-                    return self.toggle.trigger('click');
+                    closeDropDown();
                 }
             };
 
             function handleInputKeyDown(e) {
-                console.debug("handleInputKeyDown");
                 self.cancelKey = false;
                 if (e.keyCode == 40) {
                     self.inKeyBoardMode = true;
@@ -542,21 +631,22 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
             function openDropDown() {
-                if (!self.element.find('.pillbox').hasClass('open')) {
+                if (!self.pillbox.hasClass('open')) {
                     self.toggle.trigger('focus');
                     return self.toggle.trigger('click');
 
                 }
             };
+
             function closeDropDown() {
-                if (self.element.find('.pillbox').hasClass('open')) {
+                if (self.pillbox.hasClass('open')) {
                     self.toggle.trigger('focus');
                     return self.toggle.trigger('click');
                 }
             };
+
             function handleDummyKeyDown(e) {
-                console.debug("handleDummyKeyDown");
-                if (self.inKeyBoardMode) { return;}
+                if (self.inKeyBoardMode) { return; }
                 if (e.keyCode == 40 || e.keyCode == 32) {
 
                     self.inKeyBoardMode = true;
@@ -567,9 +657,9 @@ define(["knockout", "jquery"], function (ko, $) {
                     swallow(e);
                     return false;
                 }
-            }
-            function onBodyKeyDown(e){
-                console.debug("onBodyKeyDown");
+            };
+
+            function onBodyKeyDown(e) {
                 self.cancelKey = false;
                 if (e.keyCode == 40) {
                     openDropDown();
@@ -599,81 +689,127 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.clearAll();
                     closeDropDown();
                 }
-            }
+            };
+
             function addFocusClues() {
-                    self.inFocus(true);
-                 self.element.addClass("focus");
-            }
+                self.inFocus(true);
+                self.element.addClass("focus");
+            };
+
             function removeFocusClues() {
                 self.inFocus(false);
                 self.element.removeClass("focus");
                 self.element.find(".dummy>input").show();
             };
-            self.clearPopovers = function () {
-            }
+
             self.showPopOver = function (data, e) {
+                if (!self.popover()) {
+                    return false;
+                }
                 $e = $(e.target).closest('li');
+                if ($e.next('div.popover').length > 0) {
+                    // popover already shown
+                    return;
+                }
                 self.element.find(".options li").not($e).popover('hide');
                 $e.popover('show');
+                var po = $e.next('div.popover')[0];
+
+                if (ko.dataFor(po) === data) {
+                    ko.cleanNode(po);
+                }
+                if (!(ko.dataFor(po) === data)) {
+                    ko.applyBindings(data, $e.next()[0]);
+
+                }
                 if (self.optionsPopOver) {
 
                 }
-            }
+            };
+
             self.hoverItem = function (data, e) {
-                console.debug('hover ' + e.type);
                 self.clearHighlights();
                 data.highlight(true);
                 self.showPopOver(data, e);
                 swallow(e);
-           };
-           self.onMouseWheel = function (e) {
-               $c = self.element.find(".options");
-               $e = $c.find('li:first-child');
-               var detent = $e.height();
-               var max = detent * $c.find('li').length;
-               var scrolltop = $c.scrollTop();
-               console.debug("deltaMode:" + e.originalEvent.deltaMode);
-               console.debug("deltaY:" + e.originalEvent.deltaY);
-               console.debug("wheelDeltaY:" + e.originalEvent.wheelDeltaY);
-               if (e.originalEvent.deltaY < 0) {
-                   scrolltop = Math.max(scrolltop - detent, 0);
-               } else {
-                   scrolltop = Math.min(scrolltop + detent, max - $c.height());
-               }
-               console.debug("scrolltop: " + scrolltop);
-               $c.scrollTop(scrolltop);
-               //$c.animate({
-               //    scrollTop: scrolltop
-               //}, 100);
-               return false;
-           }
+            };
+
+            self.onMouseWheel = function (e) {
+                console.debug('onMouseWheel');
+                if ($(e.target).closest('.popover').length > 0)
+                    return false;
+                $c = self.element.find(".options");
+
+                var detent = self.itemHeight();
+                var max = detent * $c.find('li').length;
+                var scrolltop = $c.scrollTop();
+                var bottom = scrolltop + $c.height();
+                var _ch = 0;
+
+                if (e.originalEvent.deltaY < 0) {
+                    if (scrolltop<7)
+                        return;
+                    var prev;
+                        //console.debug("scrolltop " + scrolltop);
+                    $('.options>li').each(function (idx, val) {
+                       // console.debug(ko.dataFor(val).text + " top:" + $(val).position().top + ", bottom:"+($(val).position().top + $(val).outerHeight()));
+                 
+                        if ($(val).position().top < 0 && $(val).position().top + $(val).outerHeight() >= 0) {
+                            _ch = $($('.options>li')[idx - 1]).position().top + scrolltop;
+                       
+                            return false;
+                        } 
+                    });
+                    scrolltop = _ch+1;
+                   // scrolltop = Math.max(scrolltop - detent, 0);
+                } else {
+                    $('.options>li').each(function (idx, val) {
+                        _ch += $(val).outerHeight();
+                        if (_ch > bottom) {
+                            return false;
+                        }
+                    });
+                    scrolltop = _ch - $c.height();
+
+                   // scrolltop = Math.min(scrolltop + detent, max - $c.height());
+                }
+                $c.scrollTop(scrolltop);
+                //$c.animate({
+                //    scrollTop: scrolltop
+                //}, 100);
+                return false;
+            };
+
            self.selectAll = function () {
                $.each(self.options(), function (key, val) {
                    self.selectItem(val);
                })
            };
+
            self.deselectAll = function () {
-               $.each(self.options(), function (key, val) {
-                   self.removeItem(val);
-               })
+               self.clearSelections();
            };
 
            self.init = function () {
                self.element.data('pillbox', self);
+               self.scrollbar(params.scrollbar !== undefined ? params.scrollbar : false);
                 //self.sort(self.options());
-                if (self.inputEnabled) {
-                    self.element.find(".search>input").on('keydown', handleInputKeyDown)
-                        .on('keypress', handleInputKeyPress)
-                        .on('keyup', handleInputKeyUp)
-                        .on('click', function (e) {
-                            swallow(e);
-                    });
+               if (self.typeAhead()) {
+                   self.element.find(".dropdown-menu").prepend('<li class="search"><input class="form-control" type="text"  /></li>');
+                   self.input = self.element.find(".search>input")[0];
+                        self.element.find(".search>input").on('keydown', handleInputKeyDown)
+                            .on('keypress', handleInputKeyPress)
+                            .on('keyup', handleInputKeyUp)
+                            .on('click', function (e) {
+                                swallow(e);
+                        });
+                   
                 }
-                if (self.optionsPopOver) {
-                    $.each(self.element.find(".options li"), function (key, val) {
-                        var d = ko.dataFor(val);
-                        $(val).popover({ content: d[optionsPopOver] })
-                    });
+                if (self.popover()) {
+                    self.element.find(".options li").popover({ html: true, placement:'right auto', content: self.popoverContent() });
+                    //$.each(self.element.find(".options li"), function (key, val) {
+                    //    $(val).popover({ html: true, placement:'right auto', content: self.popoverContent() });
+                    //});
                 }
 
                 self.element.find(".dummy>input").on('focus', function (e) {
@@ -689,8 +825,9 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.element.find(".dummy>input").focus();
                 });
                 self.toggle.parent().on('hide.bs.dropdown', function (e) {
-                    var $e = self.element.find('.pillbox');
-                    $e.removeClass('dropup');
+
+                    self.element.find(".options li").popover('hide');
+                    self.pillbox.removeClass('dropup');
                     self.clearAll();
                     self.clearHighlights();
                     self.inKeyBoardMode = false;
@@ -702,10 +839,11 @@ define(["knockout", "jquery"], function (ko, $) {
                     if (self.dropdownRows()) {
                         var h = $(self.element.find('.options li')[0]).outerHeight();
                         self.itemHeight(h);
+                        self.itemHeight.valueHasMutated();
                     };
                     self.clearHighlights();
                         $e = $(e.target);
-                    if (self.inputEnabled) {
+                    if (self.typeAhead()) {
                         $e.find(".search>input")[0].focus();
                     } 
                 });
@@ -714,8 +852,8 @@ define(["knockout", "jquery"], function (ko, $) {
 
                         return false;
                     }
-                    var $e = self.element.find('.pillbox');
-                    $e.removeClass('dropup');
+                    self.element.find(".options").scrollTop(0);
+                    self.pillbox.removeClass('dropup');
                     var offset = self.element.offset();
                     var scrolltop = $(window).scrollTop();
                     var ddht = self.element.find(".dropdown-menu").outerHeight();
@@ -723,13 +861,11 @@ define(["knockout", "jquery"], function (ko, $) {
                     var top = offset.top - ddht;
                
                     if (scrolltop + $(window).height() < bottom && top > scrolltop) {
-                        $e.addClass('dropup');
+                        self.pillbox.addClass('dropup');
                     }
 
                 });
-                if (!self.scrollbar) {
-                    self.element.find(".options").addClass("no-scroll")
-                }
+               
                 self.element.find(".options").on("wheel", self.onMouseWheel);
             };
 

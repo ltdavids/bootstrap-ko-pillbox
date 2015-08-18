@@ -3,6 +3,9 @@
   display: inline-block;
   width: auto;
 }
+pillbox .pillbox {
+  background-color: #fff;
+}
 pillbox .pillbox .selections {
   background-color: transparent;
   border: 1px solid #e3e3e3;
@@ -76,6 +79,8 @@ pillbox .pillbox .options {
 }
 pillbox .pillbox .options li {
   list-style: none;
+  border-bottom: 1px solid #ccc;
+  padding: 5px 0;
 }
 pillbox .pillbox .options li div {
   padding: 0 10px;
@@ -160,4 +165,4 @@ pillbox.focus {
   font-size: 14px;
   height: 34px;
 }
-/*# sourceMappingURL=multi-select.css.map */
+/*# sourceMappingURL=pillbox.css.map */

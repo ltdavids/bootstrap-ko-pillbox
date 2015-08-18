@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title></title>
+    <title>bootstrap-ko-pillbox</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!--<script src="js/lib/polyfills.js"></script>-->
@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link href="vs.css" rel="stylesheet" />
-    <link href="src/multi-select.min.css" rel="stylesheet" />
+    <link href="src/pillbox.min.css" rel="stylesheet" />
     <script>
         hljs.initHighlightingOnLoad();</script>
     <style>
@@ -22,9 +22,38 @@
         code.hljs{
                 background-color: #f5f5f5;
         }
+        h1{font-size:3.5em}
+        .page-head{
+             -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  width: 100%;
+  height: 110px;
+  border: none;
+  /*font: normal 16px/1 "Times New Roman", Times, serif;*/
+  color: rgba(255,255,255,1);
+  /*text-align: center;*/
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  background: url("http://enjoycss.com/bg-img/default/3_6.png");
+  background-position: 50% 50%;
+  -webkit-background-origin: padding-box;
+  background-origin: padding-box;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-background-size: auto auto;
+  background-size: auto auto;
+        }
     </style>
 </head>
 <body>
+    <a href="https://github.com/ltdavids/bootstrap-ko-pillbox/" class="hide-on-med-and-down">
+        <img style="position: absolute; right: 0; border: 0; z-index: 1000;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub">
+    </a>
+    <div class="page-head container-fluid">
+
+        <h1>bootstrap-ko-pillbox</h1>
+    </div>
     <div class="container">
         <div class="row"><div style="min-height:80px">&nbsp;</div></div>
         <div>
@@ -40,15 +69,19 @@
                 <div class=" col-sm-4">
                     <div>
                         <pillbox id="pb1"
-                                 params="optionValues:Movies,
-
-                                 optionsText:'text'"></pillbox>
+                                 params="optionValues:Movies, selectedOptions:SelectedMovies, optionsText:'text'">
+                        </pillbox>
                     </div>
                 </div>
                 <div class="col-sm-8">
                     <h3>HTML Markup</h3>
+                    <h5>Using internal selected options observable</h5>
                     <pre><code class="html">&lt;pillbox params=&quot;optionValues:Movies,  optionsText:&#39;text&#39;&quot;/&gt;</code></pre>
 
+                    <h5>Using an observableArray in the view model</h5>
+                    <pre><code>&lt;pillbox
+    params=&quot;optionValues:Movies, selectedOptions:SelectedMovies, optionsText:&#39;text&#39;&quot;&gt;
+&lt;/pillbox&gt;</code></pre>
                     <h3>Access internal selected options array with JavaScript</h3>
                     <pre><code>var selected = $('#pb4').data('pillbox').selectedOptions;
    </code></pre>
