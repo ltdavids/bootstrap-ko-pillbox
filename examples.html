@@ -644,6 +644,22 @@
         </div>
 
     </script>
+    <script type="text/html" id="popover-template">
+
+        <div class="row" style="width:285px;">
+            <div class="col-xs-4" style="vertical-align:middle"> <img data-bind="attr:{src:img}" style="width:100%;" /></div>
+            <div class="col-xs-8" style="padding-left:0">
+                <div class="title" data-bind=" text:text" style="font-weight:bold"></div>
+                <div class="cast" style="color:#000;font-size:11px; line-height:11px" data-bind="text:cast"></div>
+                <div class="item-description" style="color:#808080;font-size:10px; line-height:9px; margin-top:8px;" data-bind="text:description"></div>
+
+            </div>
+        </div>
+        <div>
+            <div class="cast" style="color:#000;font-size:11px; line-height:13px"><b>Director: </b><span data-bind="text:director"></span></div>
+            <div class="cast" style="color:#000;font-size:11px; line-height:13px"><b>Released: </b><span data-bind="text:year"></span></div>
+        </div>
+    </script>
 </body>
 
 
