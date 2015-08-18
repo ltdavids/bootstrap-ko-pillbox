@@ -86,7 +86,7 @@ define(["knockout", "jquery"], function (ko, $) {
         $elem = $(componentInfo.element);
         var optionTemplate = params.optionTemplate;
         var optionsText = params.optionsText !== undefined ? params.optionsText : '';
-        var optionsPopOver = params.optionsPopOver !== undefined ? params.optionsPopOver : '';
+       
         $elem.find(".selected-options").prepend('<li class="placeholder" data-bind="visible:placeHolderVisible"><span  data-bind="text:placeHolder"></span></li>');
         $elem.find(".selected-options").append('<li class="padder" >&nbsp;<span class="caret" data-bind="visible:placeHolderVisible"></span></li>');
         $elem.find(".selected-options").append('<li class="dummy" ><input class="" type="text"  /></li>');
@@ -162,7 +162,7 @@ define(["knockout", "jquery"], function (ko, $) {
             self.showPillbox = ko.observable(params.showPillbox !== undefined ? params.showPillbox : true);
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
             self.popover = ko.observable(params.popover !== undefined ? params.popover : '');
-            self.popoverTemplate = params.popoverTemplate !== undefined ? params.popoverTemplate : '';
+            //self.popoverTemplate = params.popoverTemplate !== undefined ? params.popoverTemplate : '';
             self.selectedOptions = params.selectedOptions? params.selectedOptions: ko.observableArray();
             //remainingOptions contains all non selected options
             self.remainingOptions = ko.observableArray();
@@ -218,18 +218,18 @@ define(["knockout", "jquery"], function (ko, $) {
 
             self.popoverContent = function (d) {
                 if (self.popover())
-                    if (self.popover().popoverTemplate) {
+                    if (self.popover().template) {
                         var _html = "";
-                        if (typeof self.popover().popoverTemplate === 'function') {
-                            _html = self.popover().popoverTemplate();
+                        if (typeof self.popover().template === 'function') {
+                            _html = self.popover().template();
                         }
                         else {
 
-                            var _template = $('#' + self.popover().popoverTemplate)[0];
+                            var _template = $('#' + self.popover().template)[0];
                             if (!_template) {
                                 throw ("Invalid template");
                             }
-                            _html = $('#' + self.popover().popoverTemplate)[0].innerHTML;
+                            _html = $('#' + self.popover().template)[0].innerHTML;
                         }
 
                     }

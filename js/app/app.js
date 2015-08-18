@@ -209,10 +209,10 @@ require(["moment"], function (moment) {
             };
             self.setPopoverTemplate = function () {
                 $('#pb1').data('pillbox').option('popover', self.popoverSet() ? '' : {
-                    popoverTemplate: 'popover-template'
+                    template: 'popover-template'
                 });
                 $('#pb2').data('pillbox').option('popover', self.popoverSet() ? '' : {
-                    popoverTemplate: 'popover-template'
+                    template: 'popover-template'
                 });
                 self.popoverSet(!self.popoverSet());
 
