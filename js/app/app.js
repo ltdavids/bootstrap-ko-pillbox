@@ -147,7 +147,7 @@ require(["moment"], function (moment) {
 
         ko.components.register('pillbox', {
             viewModel: { require: 'pillbox' },
-            template: { require: 'text!/../../src/pillbox.html' }
+            template: { require: 'text!../../src/pillbox.html' }
 
         });
         function v() {
