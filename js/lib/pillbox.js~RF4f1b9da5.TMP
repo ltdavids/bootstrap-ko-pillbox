@@ -158,7 +158,6 @@ define(["knockout", "jquery"], function (ko, $) {
             self.inKeyBoardMode = false;
             self.pillbox = self.element.find('.pillbox');
             self.typeAhead(params.typeAhead !== undefined ? params.typeAhead : false);
-            self.optionTemplate = params.optionTemplate;
             self.showPillbox = ko.observable(params.showPillbox !== undefined ? params.showPillbox : true);
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
             self.popover = ko.observable(params.popover !== undefined ? params.popover : '');
@@ -239,8 +238,7 @@ define(["knockout", "jquery"], function (ko, $) {
             self.resetPopovers = function () {
                 self.element.find(".options li").popover('destroy');
                 if (self.popover()) {
-                    var _placement = $(window).width() > 400 ? 'right auto' : 'bottom auto';
-                    self.element.find(".options li").popover({ html: true, placement: _placement, content: self.popoverContent() });
+                    self.element.find(".options li").popover({ html: true, placement: 'right auto', content: self.popoverContent() });
                 }
             };
 
@@ -737,13 +735,7 @@ define(["knockout", "jquery"], function (ko, $) {
             };
             
             self.onMouseWheel = function (e) {
-                if (!self.dropdownRows()) {
-                    return;
-                }
-                if ($(e.target).closest('.popover').length > 0)
-                    return false;
 
-                var factor = self.optionTemplate ? 30 : 20;
                 $c = self.element.find(".options");
                 var _overall = 0;
                 var scrolltop = 0;
@@ -752,11 +744,11 @@ define(["knockout", "jquery"], function (ko, $) {
                 });
 
                 if (e.originalEvent.deltaY < 0) {
-                     scrolltop = $c.scrollTop()-factor;
+                     scrolltop = $c.scrollTop()-20;
 
                      scrolltop = Math.max(scrolltop, 0);
                 } else {
-                     scrolltop = $c.scrollTop()+factor;
+                     scrolltop = $c.scrollTop()+20;
 
                      scrolltop = Math.min(scrolltop, _overall - $c.height());
 
@@ -765,7 +757,57 @@ define(["knockout", "jquery"], function (ko, $) {
                 $c.scrollTop(scrolltop);
                 return false;
             };
-     
+            self.onMouseWheel2 = function (e) {
+                if (!self.dropdownRows()) {
+                return;
+                }
+                console.debug('onMouseWheel');
+                if ($(e.target).closest('.popover').length > 0)
+                    return false;
+                $c = self.element.find(".options");
+
+                var detent = self.itemHeight();
+                var max = detent * $c.find('li').length;
+                var scrolltop = $c.scrollTop();
+                var bottom = scrolltop + $c.height();
+                var _ch = 0;
+
+                if (e.originalEvent.deltaY < 0) {
+                    if (scrolltop<7)
+                        return;
+                    var prev;
+                        console.debug("scrolltop " + scrolltop);
+                    $('.options>li').each(function (idx, val) {
+                        console.debug(ko.dataFor(val).text + " top:" + $(val).position().top + ", bottom:"+($(val).position().top + $(val).outerHeight()));
+                 
+                        if ($(val).position().top < 0 && $(val).position().top + $(val).outerHeight() >= 0) {
+                            console.debug("idx = " + idx);
+                            _ch = $($('.options>li')[idx>0 ? idx-1 :0]).position().top + scrolltop;
+                            console.debug("_ch = " + _ch);
+                       
+                            return false;
+                        } 
+                    });
+                    scrolltop = _ch+1;
+                   // scrolltop = Math.max(scrolltop - detent, 0);
+                } else {
+                    $('.options>li').each(function (idx, val) {
+                        _ch += $(val).outerHeight();
+                        if (_ch > bottom) {
+                            return false;
+                        }
+                    });
+                    scrolltop = _ch - $c.height();
+
+                   // scrolltop = Math.min(scrolltop + detent, max - $c.height());
+                }
+                $c.scrollTop(scrolltop);
+                //$c.animate({
+                //    scrollTop: scrolltop
+                //}, 100);
+                return false;
+            };
+
            self.selectAll = function () {
                $.each(self.options(), function (key, val) {
                    self.selectItem(val);
@@ -790,14 +832,13 @@ define(["knockout", "jquery"], function (ko, $) {
                                 swallow(e);
                         });
                    
-               }
-               self.resetPopovers();
-                //if (self.popover()) {
-                //    self.element.find(".options li").popover({ html: true, placement:'right auto', content: self.popoverContent() });
-                //    //$.each(self.element.find(".options li"), function (key, val) {
-                //    //    $(val).popover({ html: true, placement:'right auto', content: self.popoverContent() });
-                //    //});
-                //}
+                }
+                if (self.popover()) {
+                    self.element.find(".options li").popover({ html: true, placement:'right auto', content: self.popoverContent() });
+                    //$.each(self.element.find(".options li"), function (key, val) {
+                    //    $(val).popover({ html: true, placement:'right auto', content: self.popoverContent() });
+                    //});
+                }
 
                 self.element.find(".dummy>input").on('focus', function (e) {
                     addFocusClues();

@@ -1,0 +1,630 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--<script src="js/lib/polyfills.js"></script>-->
+    <script src="js/lib/highlight.pack.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="vs.css" rel="stylesheet" />
+    <link href="src/multi-select.min.css" rel="stylesheet" />
+    <script>
+        hljs.initHighlightingOnLoad();</script>
+    <style>
+        .sample{margin-bottom:20px;
+                border-bottom:1px solid #ccc;
+        }
+        .overliner{
+            background-color:rgba(240, 250, 4, 0.47);
+        }
+        code.hljs{
+                background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row"><div style="min-height:80px">&nbsp;</div></div>
+        <div>
+
+            <div class="sample row  form-inline" id="sample1">
+
+                <div class="col-xs-12">
+                    <h2>Basic</h2>
+                    <p>Pillbox requires 2 parameters optionValues and optionText.</p>
+                    <p>If the selectedOptions parameter is set to a valid knockout observableArray, Pillbox will bind to it for selected values.</p><p>  If the selectedOptions parameter is ommited, Pillbox will create an observableArray internally and expose it via its selectedOptions property. </p>
+                </div>
+
+                <div class=" col-sm-4">
+                    <div>
+                        <pillbox id="pb1"
+                                 params="optionValues:Movies, selectedOptions:SelectedMovies, optionsText:'text'">
+                        </pillbox>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <h4>With internal selected options observable</h4>
+                    <pre><code class="html">&lt;pillbox params=&quot;optionValues:Movies,  optionsText:&#39;text&#39;&quot;/&gt;</code></pre>
+
+                    <h4>With selected options observable in view model</h4>
+                    <pre><code>&lt;pillbox
+    params=&quot;optionValues:Movies, selectedOptions:SelectedMovies, optionsText:&#39;text&#39;&quot;&gt;
+&lt;/pillbox&gt;</code></pre>
+                    <h3>Access internal selected options array with JavaScript</h3>
+                    <pre><code>var selected = $('#pb4').data('pillbox').selectedOptions;
+   </code></pre>
+
+                </div>
+            </div>
+
+
+            <div class="sample row" id="sample11">
+
+                <div class="col-xs-12">
+                    <h2>Control Sizing</h2>
+                    <p>
+                        Layout and size can be controlled by applying the standard bootstrap classes
+                        <code>.form-inline</code>,
+                        <code>.form-horizontal</code>, <code>.form-group</code> and <code>.form-control</code>
+                    </p>
+                </div>
+                <p></p>
+                <div class=" col-sm-4">
+                    <div class="form-inline">
+                        <div>
+                            <div>
+                                <label class="control-label"><span style="color:red">.form-inline .form-group-sm</span></label>
+                            </div>
+
+                            <div class="form-group-sm">
+                                <pillbox id="pb11" class="form-control"
+                                         params="optionValues:Movies,
+                                 selectedOptions:SelectedMovies,
+                                 optionsText:'text'"></pillbox>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <label class="control-label"><span style="color:red">.form-inline .form-group</span></label>
+                            </div>
+
+                            <div class="form-group">
+                                <pillbox id="pb13" class="form-control"
+                                         params="optionValues:Movies,
+                                 selectedOptions:SelectedMovies,
+                                 optionsText:'text'"></pillbox>
+                            </div>
+                        </div>
+                        <div>
+
+                        </div>
+                    </div>
+                    <div class="form-horizontal">
+                        <div>
+                            <label class="control-label"><span style="color:red">.form-horizontal .form-group-lg</span></label>
+                        </div>
+                        <div class="form-group-lg">
+                            <pillbox id="pb12" class="form-control"
+                                     params="optionValues:Movies, selectedOptions:SelectedMovies, optionsText:'text'"></pillbox>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code class="html">&lt;div class=&quot;form-inline&quot;&gt;
+    &lt;div class=&quot;form-group-lg&quot;&gt;
+        &lt;pillbox id=&quot;pb12&quot; class=&quot;form-control&quot;
+            params=&quot;optionValues:Movies, selectedOptions:SelectedMovies, optionsText:&#39;text&#39;&quot;&gt;
+        &lt;/pillbox&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+
+
+                </div>
+            </div>
+            <div class="sample row  form-inline form-inline" id="sample4">
+
+                <div class="col-xs-12">
+                    <h2>Placeholder</h2>
+                    <p>Any text inside the pillbox element will be used as the placeholder. The placeholder can also be set using javascript.</p><p> If no placeholder is set then it will default to "Choose"</p>
+                </div>
+
+                <div class="form-group-sm col-sm-4">
+
+                    <div>
+                        <pillbox id="pb4" class="form-control"
+                                 params="optionValues:Movies,
+                                         selectedOptions:SelectedMovies,
+                                         optionsText:'text'">Choose Movies</pillbox>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb4&quot;
+    params=&quot;optionValues:Movies,
+        selectedOptions:SelectedMovies,
+        optionsText:&#39;text&#39;&quot;&gt;<span class="overliner">Choose Movies</span>&lt;/pillbox&gt;</code></pre>
+                    <h3>JavaScript</h3>
+                    <pre><code>$('#pb4').data('pillbox').option('placeHolder','Choose Movies');
+   </code></pre>
+                </div>
+
+            </div>
+
+            <div class="sample row  form-inline" id="sample2">
+
+
+                <div class="col-xs-12">
+                    <h2>Type Ahead</h2>
+                    <p>If the typeAhead property is set, Pillbox provides basic typeahead and autocomplete using array filtering.</p>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <pillbox id="pb2" class="form-control"
+                                 params="optionValues:Movies,
+                                         selectedOptions:SelectedMovies,
+                                         optionsText:'text',
+                                         placeHolder:'Choose Movies',
+                                         typeAhead:true"></pillbox>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb2&quot;
+         params=&quot;optionValues:Movies,
+                 selectedOptions:SelectedMovies,
+                 optionsText:&#39;text&#39;,                             
+                 placeHolder:&#39;Classes&#39;,
+                    <span class="overliner">typeAhead:true</span>&quot;/&gt;
+                        </code></pre>
+                    <h3>JavaScript <small class="text-danger"> * Future Release</small></h3>
+                    <pre><code>$('#pb2').data('pillbox').option('typeAhead',true);   </code></pre>
+                </div>
+
+            </div>
+
+            <div class="sample row  form-inline" id="sample5">
+                <div class="col-xs-12">
+                    <h2>Show Selected</h2>
+                    <p>By default, selected items are filtered from the dropdown.  Pillbox can be configured to show selected items in the dropdown by setting the showSelected option. </p><p>When set, items that have been selected are shown highlighted.  Clicking a selected item will un-select it.</p>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <pillbox id="pb5" class="form-control"
+                                 params="optionValues:Movies,
+                                 selectedOptions:SelectedMovies,
+                                 optionsText:'text', placeHolder:'Choose Movies',
+                                 placeHolder:'Choose Movies',
+                                 typeAhead:true,
+                                 showSelected:true"></pillbox>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb5&quot; 
+        params=&quot;optionValues:Movies,
+            selectedOptions:SelectedMovies,
+            optionsText:&#39;text&#39;, 
+            placeHolder:&#39;Classes&#39;,                             
+            typeAhead:true,
+                    <span class="overliner">showSelected:true</span>&quot; /&gt;</code></pre>
+                    <h3>JavaScript</h3>
+                    <pre><code>$('#pb5').data('pillbox').option('showSelected',true);   </code></pre>
+                </div>
+
+            </div>
+
+
+
+            <div class="sample row  form-inline" id="sample3">
+
+
+                <div class="col-xs-12">
+                    <h2>Templates</h2>
+                    <p>Pillbox supports named templates in the same fashion as knockout template binding.</p>
+                    <p>If the value passed in the optionTemplate parameter is a string value then Pillbox will expect a valid html template in the DOM with an id matching the parameter value.  If the parameter is a funtion in the viewmodel, Pillbox will call that funtion to obtain the template markup.</p>
+                    <p>The template markup is inserted into the DOM prior to binding being applied by knockout.</p>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <pillbox id="pb3" class="form-control"
+                                 params="optionValues:Movies,
+                                     selectedOptions:SelectedMovies,
+                                     optionsText:'text',
+                                     placeHolder:'Choose Movies',
+                                     typeAhead:true,
+                                     showSelected:true,
+                                     optionTemplate:template"></pillbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb3&quot;
+        params=&quot;optionValues:Movies,
+            selectedOptions:SelectedMovies,
+            optionsText:&#39;text&#39;,                             
+            placeHolder:&#39;Classes&#39;,
+            typeAhead:true,                             
+            showselected:true,
+                    <span class="overliner">optionTemplate:&#39;class-template&#39;</span>&quot; /&gt;</code></pre>
+
+                    <h3>Template Markup</h3>
+                    <pre><code>&lt;script type=&quot;text/html&quot; id=&quot;class-template&quot;&gt;
+    &lt;div class=&quot;row&quot; style=&quot;width:285px;&quot;&gt;
+        &lt;div class=&quot;col-xs-4&quot;&gt; &lt;img data-bind=&quot;attr:{src:img}&quot; style=&quot;width:100%;&quot; /&gt;&lt;/div&gt;
+        &lt;div class=&quot;col-xs-8&quot; style=&quot;padding-left:0&quot;&gt;
+            &lt;div data-bind=&quot; text:text&quot; style=&quot;font-weight:bold&quot;&gt;&lt;/div&gt;
+            &lt;div class=&quot;cast&quot; style=&quot;color:#000;font-size:11px; line-height:11px&quot; 
+                    data-bind=&quot;text:cast&quot;&gt;&lt;/div&gt;
+            &lt;div class=&quot;item-description&quot; 
+                    style=&quot;color:#808080;font-size:10px; line-height:9px; margin-top:8px;&quot; 
+                    data-bind=&quot;text:description&quot;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;</code></pre>
+                </div>
+            </div>
+
+
+            <div class="sample row  form-inline" id="sample8">
+
+
+                <div class="col-xs-12">
+                    <h2>Dropdown Height</h2>
+                    <p>By default, Pillbox does not constrain the height of the drop down.  When using templates or when there are a large number of options it may be desirable to limit the number of rows displayed.</p>
+                    <p>The dropdownRows option can be used to configure the number of items displayed in the dropdown. </p>
+                    <p class="alert alert-warning"><b>Note: </b>Pillbox currently calculates the overall height based on the height of the first item in the list. Results could vary if items are not of equal height.</p>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <pillbox id="pb8" class="form-control"
+                                 params="optionValues:Movies,
+                                     selectedOptions:SelectedMovies,
+                                     optionsText:'text',
+                                     placeHolder:'Choose Movies',
+                                     typeAhead:true,
+                                     showSelected:true,
+                                     optionTemplate:'class-template',
+                                     dropdownRows:3"></pillbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>
+&lt;pillbox id=&quot;pb8&quot; 
+        params=&quot;optionValues:Movies,
+        selectedOptions:SelectedMovies,
+        optionsText:&#39;text&#39;,
+        placeHolder:&#39;Choose Movies&#39;,
+        typeAhead:true,
+        showselected:true,
+        optionTemplate:&#39;class-template&#39;,
+        <span class="overliner">dropdownRows:3</span>&quot; /&gt;</code></pre>
+                    <h3>JavaScript </h3>
+                    <pre><code>$('#pb2').data('pillbox').option('dropdownRows',3);   </code></pre>
+                </div>
+
+            </div>
+
+            <div class="sample row  form-inline" id="sample9">
+
+                <div class="col-xs-12">
+                    <h2>Popovers</h2>
+                </div>
+
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <pillbox id="pb9" class="form-control"
+                                 params="optionValues:Movies,
+                                     selectedOptions:SelectedMovies,
+                                     optionsText:'text',
+                                     placeHolder:'Choose Movies',
+                                     typeAhead:true,
+                                     showSelected:true,
+                                     optionTemplate:'class-template',
+                                     dropdownRows:3,
+                                     optionsPopOver:'description'"></pillbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb9&quot; 
+         params=&quot;optionValues:Movies,
+                selectedOptions:SelectedMovies,
+                optionsText:&#39;text&#39;,
+                placeHolder:&#39;Choose Movies&#39;,
+                typeAhead:true,
+                showSelected:true,
+                optionTemplate:&#39;class-template&#39;,
+                dropdownRows:3,
+                <span class="overliner">optionsPopOver:&#39;description&#39;</span>&quot; /&gt;</code></pre>
+                    <h3>JavaScript </h3>
+                    <pre><code>$('#pb2').data('pillbox').option('dropdownRows',3);   </code></pre>
+                </div>
+
+            </div>
+
+            <div class="sample row  form-inline" id="sample6">
+                <div class="col-xs-12">
+                    <h2>Hide Scrollbar</h2>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <pillbox id="pb6" class="form-control"
+                                 params="optionValues:Movies,
+                                         selectedOptions:SelectedMovies,
+                                         optionsText:'text',
+                                         placeHolder:'Choose Movies',
+                                         optionTemplate:'class-template',
+                                         dropdownRows:3,
+                                         showSelected:true,
+                                         scrollbar:false"></pillbox>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb6&quot; 
+        params=&quot;optionValues:Movies,
+            selectedOptions:SelectedMovies,
+            optionsText:&#39;text&#39;,
+            placeHolder:&#39;Classes&#39;,
+            optionTemplate:&#39;class-template&#39;,
+            showSelected:true,
+                    <span class="overliner">scrollbar:false</span>&quot; /&gt;</code></pre>
+                    <h3>JavaScript</h3>
+                    <pre><code>$('#pb5').data('pillbox').option('scrollbar',false);   </code></pre>
+                </div>
+
+            </div>
+
+            <!--Pillbox Rows-->
+            <div class="sample row  form-inline" id="sample7">
+                <div class="col-xs-12">
+                    <h2>Pillbox Rows</h2>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div>
+                        <div>
+                            <pillbox id="pb7" class="form-control"
+                                     params="optionValues:Movies,
+                                         selectedOptions:SelectedMovies,
+                                         optionsText:'text',
+                                         placeHolder:'Choose Movies',
+                                         optionTemplate:'class-template',
+                                         showSelected:false,
+                                         dropdownRows:3"></pillbox>
+                        </div>
+                        <h3>Try it</h3>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default" data-bind="click:setRows">clear</button>
+                            <button type="button" class="btn btn-default" data-bind="click:setRows">1</button>
+                            <button type="button" class="btn btn-default" data-bind="click:setRows">2</button>
+                            <button type="button" class="btn btn-default" data-bind="click:setRows">3</button>
+                            <button type="button" class="btn btn-default" data-bind="click:setRows">4</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb7&quot; 
+        params=&quot;optionValues:Movies,
+            selectedOptions:SelectedMovies,
+            optionsText:&#39;text&#39;,
+            placeHolder:&#39;Classes&#39;,
+            optionTemplate:&#39;class-template&#39;,
+            showSelected:false,
+                    <span class="overliner">dropdownRows:3</span>&quot; /&gt;</code></pre>
+                    <h3>JavaScript</h3>
+                    <pre><code>$('#pb7').data('pillbox').option('rows',3);   </code></pre>
+                </div>
+
+            </div>
+
+
+            <!-- Hide Pillbox-->
+            <div class="sample row  form-inline" id="sample10">
+                <div class="col-xs-12">
+                    <h2>Hide Pillbox</h2>
+                    <p>There may be situations where you want full control over the display of selected items using an observableArray in your viewmodel.<p>  You can supress the display of the pillbox by using the showPillbox parameter and manage the selected items display on your own.</p>
+                </div>
+                <div class="form-group-sm col-sm-4">
+                    <div class="col-sm-6">
+
+                        <div>
+                            <pillbox id="pb10" class="form-control"
+                                     params="optionValues:Movies,
+                                         selectedOptions:SelectedMovies,
+                                         optionsText:'text',
+                                         placeHolder:'Choose Movies',
+                                         optionTemplate:'class-template',
+                                         showSelected:true,
+                                         dropdownRows:3,
+                                         showPillbox:false"></pillbox>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6" data-bind=" foreach:SelectedMovies">
+
+                        <div class="col-xs-4 thumbnail" style="height:70px;">
+                            <img data-bind="attr:{src:img}" style="max-height:100%;" />
+                        </div>
+
+
+
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3>HTML Markup</h3>
+                    <pre><code>&lt;pillbox id=&quot;pb10&quot; 
+         params=&quot;optionValues:Movies,
+                 selectedOptions:SelectedMovies,
+                 optionsText:&#39;text&#39;,
+                 placeHolder:&#39;Choose Movies&#39;,
+                 optionTemplate:&#39;class-template&#39;,
+                 showSelected:true,
+                 dropdownRows:3,
+                    <span class="overliner">showPillbox:false</span>&quot; /&gt;</code></pre>
+                    <h3>JavaScript</h3>
+                    <pre><code>$('#pb7').data('pillbox').option('showPillbox',false);   </code></pre>
+                </div>
+
+            </div>
+        </div>
+        <div class="row"><div style="min-height:450px">&nbsp;</div></div>
+    </div>
+
+    <!--<script src="Scripts/project-setup.js"></script>-->
+    <script>
+        requirejs.config({
+            baseUrl: 'js/lib',
+            paths: {
+                // the left side is the module ID,
+                // the right side is the path to
+                // the jQuery file, relative to baseUrl.
+                // Also, the path should NOT include
+                // the '.js' file extension. This example
+                // is using jQuery 1.9.0 located at
+                // js/lib/jquery-1.9.0.js, relative to
+                // the HTML page.
+                jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min',
+                knockout: '//cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min',
+                bootstrap: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min',
+                moment: '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min',
+                text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text.min'
+            }
+        });
+
+
+        function projectSetUpVm(data) {
+
+            var instance = this;
+
+
+
+
+            instance.SelectedMovies = ko.observableArray();
+            instance.Movies = [{ id: 1, text: "Spiderman 2", description: "This is a short description of the movie", img: "images/movie1.jpg", cast: "Tobey Maguire, Kirsten Dunst, James Franco" },
+                                      { id: 2, text: "The Hunger Games Catching Fire", description: "This is a short description of the movie", img: "images/movie6.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth" },
+                                      { id: 11, text: "The Hunger Games", description: "This is a short description of the movie", img: "images/movie4.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth " },
+                                      { id: 9, text: "Iron Man", description: "This is a short description of the movie", img: "images/movie5.jpg", cast: "Robert Downey Jr., Gwyneth Paltrow, Terrence Howard " },
+                                      { id: 12, text: "The Matrix", description: "This is a short description of the movie", img: "images/movie7.jpg", cast: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss" },
+                                      { id: 10, text: "Hancock", description: "This is a short description of the movie", img: "images/movie8.jpg", cast: "Will Smith, Charlize Theron, Jason Bateman" },
+                                      { id: 3, text: "Man of Steel", description: "This is a short description of the movie", img: "images/movie9.jpg", cast: " Henry Cavill, Amy Adams, Michael Shannon" },
+                                      { id: 4, text: "The Mummy Returns", description: "This is a short description of the movie", img: "images/movie10.jpg", cast: "Brendan Fraser, Rachel Weisz, John Hannah" },
+                                      { id: 5, text: "Wolverine Origin", description: "This is a short description of the movie", img: "images/movie11.jpg", cast: "Kathleen Barr, Michael Dobson, Brian Drummond" },
+                                      { id: 6, text: "The Last Samuri", description: "This is a short description of the movie", img: "images/movie12.jpg", cast: "Tom Cruise, Ken Watanabe, Billy Connolly" },
+                                      { id: 7, text: "Lord of the Rings", description: "This is a short description of the movie", img: "images/movie13.jpg", cast: "Elijah Wood, Ian McKellen, Orlando Bloom" },
+                                      { id: 8, text: "Gravity", description: "This is a short description of the movie", img: "images/movie14.jpg", cast: "Sandra Bullock, George Clooney, Ed Harris" }
+            ];
+            instance.setRows = function (data, e) {
+                $e = $(e.target);
+                var v = $e.text();
+                var pb = $e.closest('.sample').find('pillbox').data('pillbox');
+
+                pb.option('rows', v);
+            };
+
+            instance.setHeight = function (data, e) {
+                $e = $(e.target);
+                var v = $e.text();
+                var pb = $e.closest('.sample').find('pillbox').data('pillbox');
+                pb.option('dropdownHeight', v);
+
+            };
+
+            instance.selectAll = function (data, e) {
+                var obj = $('#pb6').data('pillbox');
+                obj.selectAll();
+            };
+
+            instance.deselectAll = function (data, e) {
+                var obj = $('#pb6').data('pillbox');
+                obj.deselectAll();
+            };
+            instance.template = function () {
+                var rslt = '<div class="row" style="width:285px;">' +
+                    '<div class="col-xs-4"> <img data-bind="attr:{src:img}" style="width:100%;" /></div>' +
+                    '<div class="col-xs-8" style="padding-left:0">' +
+                        '<div data-bind=" text:text" style="font-weight:bold"></div>' +
+                        '<div class="cast" style="color:#000;font-size:11px; line-height:11px" data-bind="text:cast"></div>' +
+                        '<div class="item-description" style="color:#808080;font-size:10px; line-height:9px; margin-top:8px;" data-bind="text:description"></div>' +
+                    '</div>' +
+                '</div>';
+                return rslt;
+            }
+        };
+        require(["moment"], function (moment) {
+
+            window.moment = moment;
+            require(["knockout", "jquery"
+            ], function (ko, $) {
+                window.ko = ko;
+                window.$ = jQuery;
+                require([
+            "bootstrap"], function () {
+
+
+
+                ko.components.register('pillbox', {
+                    viewModel: { require: 'pillbox' },
+                    template: { require: 'text!../../pill-box.html' }
+
+                });
+
+
+                ko.applyBindings(new projectSetUpVm(), $('#sample1')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample2')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample3')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample4')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample5')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample6')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample7')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample8')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample9')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#sample10')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#pb11')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#pb12')[0]);
+                ko.applyBindings(new projectSetUpVm(), $('#pb13')[0]);
+
+                $(document).ready(function () {
+                    window.setTimeout(function () {
+                        var obj = $('#pb7').data('pillbox');
+                        obj.selectAll();
+                    }, 1500);
+
+                })
+
+            });
+            })
+        })
+
+    </script>
+    <script type="text/html" id="class-template">
+
+        <div class="row" style="width:285px;">
+            <div class="col-xs-4"> <img data-bind="attr:{src:img}" style="width:100%; height:100px;" /></div>
+            <div class="col-xs-8" style="padding-left:0">
+                <div data-bind=" text:text" style="font-weight:bold"></div>
+                <div class="cast" style="color:#000;font-size:11px; line-height:11px" data-bind="text:cast"></div>
+                <div class="item-description" style="color:#808080;font-size:10px; line-height:9px; margin-top:8px;" data-bind="text:description"></div>
+            </div>
+        </div>
+
+    </script>
+</body>
+
+
+
+
+
+
+
+
