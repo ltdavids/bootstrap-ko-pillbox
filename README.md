@@ -1,4 +1,4 @@
-# bootstrap-ko-pillbox-[Demo](http://http://ltdavids.github.io/bootstrap-ko-pillbox/)
+# bootstrap-ko-pillbox-[Demo](http://ltdavids.github.io/bootstrap-ko-pillbox/index)
 A multi-select knockout component that plays nice with bootstrap.
 
 ## Examples (http://http://ltdavids.github.io/bootstrap-ko-pillbox/examples)
