@@ -263,7 +263,7 @@
                                      placeHolder:'Choose Movies',
                                      typeAhead:true,
                                      showSelected:true,
-                                     optionTemplate:template"></pillbox>
+                                     optionTemplate:'class-template'"></pillbox>
                     </div>
                 </div>
 
@@ -391,7 +391,7 @@
                                          optionTemplate:'class-template',
                                          dropdownRows:3,
                                          showSelected:true,
-                                         scrollbar:false"></pillbox>
+                                         scrollbar:true"></pillbox>
                     </div>
                 </div>
                 <div class="col-sm-8">
@@ -671,12 +671,20 @@
     </script>
     <script type="text/html" id="class-template">
 
-        <div class="row" style="width:285px;">
-            <div class="col-xs-4"> <img data-bind="attr:{src:img}" style="width:100%; height:100px;" /></div>
-            <div class="col-xs-8" style="padding-left:0">
-                <div data-bind=" text:text" style="font-weight:bold"></div>
-                <div class="cast" style="color:#000;font-size:11px; line-height:11px" data-bind="text:cast"></div>
-                <div class="item-description" style="color:#808080;font-size:10px; line-height:9px; margin-top:8px;" data-bind="text:description"></div>
+        <div class="row " style="width:285px; height:75px">
+            <div class="col-xs-2"> <img data-bind="attr:{src:img}" style=" height:60px;" /></div>
+            <div class="col-xs-10">
+                <div class="title"><b data-bind=" text:text"></b></div>
+                <div class="rating" style="position:relative; float:right; right:10px">
+                    <img src="images/star.png" style=" height:32px;" />
+                    <div data-bind="text:rating" style="font-size:12px; font-weight:bold; position:relative; right:-20px; top:-12px;">
+                    </div>
+                </div>
+                <div class="year" style="color:#000;font-size:11px; line-height:11px"><b>Released: </b><span data-bind="text:year"></span></div>
+
+                <!--<div class="cast" style="color:#000;font-size:11px; line-height:11px" data-bind="text:cast"></div>-->
+                <!--<div class="item-description" style="color:#808080;font-size:10px; line-height:9px; margin-top:8px;" data-bind="text:description"></div>-->
+
             </div>
         </div>
 
