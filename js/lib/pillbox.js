@@ -237,10 +237,11 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
             self.resetPopovers = function () {
-                self.element.find(".options li").popover('destroy');
+                $items = self.element.find(".options li");
+                $items.popover('hide');
                 if (self.popover()) {
                     var _placement = $(window).width() > 400 ? 'right auto' : 'bottom auto';
-                    self.element.find(".options li").popover({ html: true, placement: _placement, content: self.popoverContent() });
+                    $items.popover({ html: true, placement: _placement, content: self.popoverContent() });
                 }
             };
 
@@ -353,7 +354,6 @@ define(["knockout", "jquery"], function (ko, $) {
                 } else {
                     self.removeItem(data, e);
                 }
-                self.clearAll();
                 swallow(e);
                
              
@@ -391,7 +391,6 @@ define(["knockout", "jquery"], function (ko, $) {
                         self.lastSingle = '';
                         self.clearHintText();
                     }
-                    self.sort(_options);
                 }
                
 
@@ -399,6 +398,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 self.options(_options);
                 self.options.valueHasMutated();
                 self.options.notifySubscribers();
+                self.resetPopovers();
             };
 
             self.clearSelections = function () {
@@ -766,10 +766,11 @@ define(["knockout", "jquery"], function (ko, $) {
                 return false;
             };
      
-           self.selectAll = function () {
-               $.each(self.options(), function (key, val) {
-                   self.selectItem(val);
-               })
+            self.selectAll = function () {
+                for (i = self.options().length-1; i >= 0; i--) {
+                    self.selectItem(self.options()[i]);
+
+                }
            };
 
            self.deselectAll = function () {
@@ -779,7 +780,7 @@ define(["knockout", "jquery"], function (ko, $) {
            self.init = function () {
                self.element.data('pillbox', self);
                self.scrollbar(params.scrollbar !== undefined ? params.scrollbar : false);
-                //self.sort(self.options());
+              
                if (self.typeAhead()) {
                    self.element.find(".dropdown-menu").prepend('<li class="search"><input class="form-control" type="text"  /></li>');
                    self.input = self.element.find(".search>input")[0];
@@ -792,12 +793,7 @@ define(["knockout", "jquery"], function (ko, $) {
                    
                }
                self.resetPopovers();
-                //if (self.popover()) {
-                //    self.element.find(".options li").popover({ html: true, placement:'right auto', content: self.popoverContent() });
-                //    //$.each(self.element.find(".options li"), function (key, val) {
-                //    //    $(val).popover({ html: true, placement:'right auto', content: self.popoverContent() });
-                //    //});
-                //}
+       
 
                 self.element.find(".dummy>input").on('focus', function (e) {
                     addFocusClues();
@@ -854,9 +850,29 @@ define(["knockout", "jquery"], function (ko, $) {
                 });
                
                 self.element.find(".options").on("wheel", self.onMouseWheel);
-            };
+           };
+
+           //return {
+           //    selectAll: self.selectAll,
+           //    deselectAll: self.deselectAll,
+           //    dropheight: self.dropheight,
+           //    handleClick: self.handleClick,
+           //    height: self.height,
+           //    hoverItem: self.hoverItem,
+           //    inFocus: self.inFocus,
+           //    init: self.init,
+           //    option: self.option,
+           //    options: self.options,
+           //    placeHolderVisible: self.placeHolderVisible,
+           //    placeHolder: self.placeHolder,
+
+           //    selectedOptions: self.selectedOptions,
+           //    showPillbox: self.showPillbox
+           //}
 
         };
+
+
         var obj = new vm(params, $elem);
         var ph = componentInfo.templateNodes[0];
         if (ph) {

@@ -206,7 +206,7 @@
                  optionsText:&#39;text&#39;,                             
                  placeHolder:&#39;Classes&#39;,
                     <span class="overliner">typeAhead:true</span>&quot;/&gt;</code></pre>
-                    <h3>JavaScript <small class="text-danger"> * Future Release</small></h3>
+                    <h3>JavaScript</h3>
                     <pre><code>$('#pb2').data('pillbox').option('typeAhead',true);   </code></pre>
                 </div>
 
@@ -215,7 +215,7 @@
             <div class="sample row  form-inline" id="sample5">
                 <div class="col-xs-12">
                     <h2>Show Selected</h2>
-                    <p>By default, selected items are filtered from the dropdown.  Pillbox can be configured to show selected items in the dropdown by setting the showSelected option. </p><p>When set, items that have been selected are shown highlighted.  Clicking a selected item will un-select it.</p>
+                    <p>By default, selected items are filtered from the dropdown.  Pillbox can be configured to show selected items in the dropdown by setting the showSelected option. </p><p>When set, items that have been selected are shown highlighted.  Clicking a selected item will de-select it.</p>
                 </div>
                 <div class="form-group-sm col-sm-4">
                     <div>
@@ -536,18 +536,55 @@
 
 
             instance.SelectedMovies = ko.observableArray();
-            instance.Movies = [{ id: 1, text: "Spiderman 2", description: "This is a short description of the movie", img: "images/movie1.jpg", cast: "Tobey Maguire, Kirsten Dunst, James Franco" },
-                                      { id: 2, text: "The Hunger Games Catching Fire", description: "This is a short description of the movie", img: "images/movie6.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth" },
-                                      { id: 11, text: "The Hunger Games", description: "This is a short description of the movie", img: "images/movie4.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth " },
-                                      { id: 9, text: "Iron Man", description: "This is a short description of the movie", img: "images/movie5.jpg", cast: "Robert Downey Jr., Gwyneth Paltrow, Terrence Howard " },
-                                      { id: 12, text: "The Matrix", description: "This is a short description of the movie", img: "images/movie7.jpg", cast: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss" },
-                                      { id: 10, text: "Hancock", description: "This is a short description of the movie", img: "images/movie8.jpg", cast: "Will Smith, Charlize Theron, Jason Bateman" },
-                                      { id: 3, text: "Man of Steel", description: "This is a short description of the movie", img: "images/movie9.jpg", cast: " Henry Cavill, Amy Adams, Michael Shannon" },
-                                      { id: 4, text: "The Mummy Returns", description: "This is a short description of the movie", img: "images/movie10.jpg", cast: "Brendan Fraser, Rachel Weisz, John Hannah" },
-                                      { id: 5, text: "Wolverine Origin", description: "This is a short description of the movie", img: "images/movie11.jpg", cast: "Kathleen Barr, Michael Dobson, Brian Drummond" },
-                                      { id: 6, text: "The Last Samuri", description: "This is a short description of the movie", img: "images/movie12.jpg", cast: "Tom Cruise, Ken Watanabe, Billy Connolly" },
-                                      { id: 7, text: "Lord of the Rings", description: "This is a short description of the movie", img: "images/movie13.jpg", cast: "Elijah Wood, Ian McKellen, Orlando Bloom" },
-                                      { id: 8, text: "Gravity", description: "This is a short description of the movie", img: "images/movie14.jpg", cast: "Sandra Bullock, George Clooney, Ed Harris" }
+            instance.Movies = [{
+                id: 1, text: "Spiderman 2", description: "This is a short description of the movie", img: "images/movie1.jpg", cast: "Tobey Maguire, Kirsten Dunst, James Franco",
+                director: "Sam Raimi", rating: 7.3, year: 2004
+            },
+                              {
+                                  id: 2, text: "The Hunger Games Catching Fire", description: "Katniss Everdeen and Peeta Mellark become targets of the Capitol after their victory in the 74th Hunger Games sparks a rebellion in the Districts of Panem.", img: "images/movie6.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth",
+                                  director: "Francis Lawrence", rating: 7.7, year: 2013
+                              },
+                              {
+                                  id: 11, text: "The Hunger Games",
+                                  description: "Katniss Everdeen voluntarily takes her younger sister's place in the Hunger Games, a televised fight to the death in which two teenagers from each of the twelve Districts of Panem are chosen at random to compete.", img: "images/movie4.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth ",
+                                  director: "Gary Ross", rating: 7.3, year: 2012
+                              },
+                              {
+                                  id: 9, text: "Iron Man", description: "After being held captive in an Afghan cave, an industrialist creates a unique weaponized suit of armor to fight evil.", img: "images/movie5.jpg", cast: "Robert Downey Jr., Gwyneth Paltrow, Terrence Howard ",
+                                  director: "Jon Favreau", rating: 7.9, year: 2008
+                              },
+                              {
+                                  id: 12, text: "The Matrix", description: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.", img: "images/movie7.jpg", cast: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss",
+                                  director: "The Wachowski Brothers", rating: 8.7, year: 1999
+                              },
+                              {
+                                  id: 10, text: "Hancock", description: "Hancock is a superhero whose ill considered behavior regularly causes damage in the millions. He changes when one person he saves helps him improve his public image.", img: "images/movie8.jpg", cast: "Will Smith, Charlize Theron, Jason Bateman",
+                                  director: "Peter Berg", rating: 6.4, year: 2008
+                              },
+                              {
+                                  id: 3, text: "Man of Steel", description: "Clark Kent, one of the last of an extinguished race disguised as an unremarkable human, is forced to reveal his identity when Earth is invaded by an army of survivors who threaten to bring the planet to the brink of destruction.", img: "images/movie9.jpg", cast: " Henry Cavill, Amy Adams, Michael Shannon",
+                                  director: "Zack Snyder", rating: 7.2, year: 2013
+                              },
+                              {
+                                  id: 4, text: "The Mummy Returns", description: "The mummified body of Imhotep is shipped to a museum in London, where he once again wakes and begins his campaign of rage and terror.", img: "images/movie10.jpg", cast: "Brendan Fraser, Rachel Weisz, John Hannah",
+                                  director: "Stephen Sommers", rating: 6.3, year: 2001
+                              },
+                              {
+                                  id: 5, text: "X-Men Origins: Wolverine", description: "A look at Wolverine's early life, in particular his time with the government squad Team X and the impact it will have on his later years.", img: "images/movie11.jpg", cast: "Kathleen Barr, Michael Dobson, Brian Drummond",
+                                  director: "Gavin Hood", rating: 6.7, year: 2009
+                              },
+                              {
+                                  id: 6, text: "The Last Samuri", description: "An American military advisor embraces the Samurai culture he was hired to destroy after he is captured in battle.", img: "images/movie12.jpg", cast: "Tom Cruise, Ken Watanabe, Billy Connolly",
+                                  director: "Edward Zwick", rating: 7.7, year: 2003
+                              },
+                              {
+                                  id: 7, text: "Lord of the Rings: The Fellowship of the Ring", description: "A meek hobbit of the Shire and eight companions set out on a journey to Mount Doom to destroy the One Ring and the dark lord Sauron.", img: "images/movie13.jpg", cast: "Elijah Wood, Ian McKellen, Orlando Bloom",
+                                  director: "Peter Jackson", rating: 8.8, year: 2001
+                              },
+                              {
+                                  id: 8, text: "Gravity", description: "A medical engineer and an astronaut work together to survive after a catastrophe destroys their shuttle and leaves them adrift in orbit.", img: "images/movie14.jpg", cast: "Sandra Bullock, George Clooney, Ed Harris",
+                                  director: "Alfonso Cuarón", rating: 7.9, year: 2013
+                              }
             ];
             instance.setRows = function (data, e) {
                 $e = $(e.target);

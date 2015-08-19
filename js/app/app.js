@@ -35,9 +35,6 @@ function projectSetUpVm(data) {
 
     var instance = this;
 
-
-
-
     instance.SelectedMovies = ko.observableArray();
     instance.Movies = [{
         id: 1, text: "Spiderman 2", description: "This is a short description of the movie", img: "images/movie1.jpg", cast: "Tobey Maguire, Kirsten Dunst, James Franco",
@@ -89,6 +86,7 @@ function projectSetUpVm(data) {
                                   director: "Alfonso Cuarón", rating: 7.9, year: 2013
                               }
     ];
+
     instance.setRows = function (data, e) {
         $e = $(e.target);
         var v = $e.text();
@@ -133,6 +131,7 @@ function projectSetUpVm(data) {
     instance.visible = ko.observable(false);
     instance.ownerBoxVisible = ko.observable(false);
 };
+
 require(["moment"], function (moment) {
 
     window.moment = moment;
@@ -216,13 +215,21 @@ require(["moment"], function (moment) {
                 });
                 self.popoverSet(!self.popoverSet());
 
-            }
+            };
+            self.deselectAll = function () {
+                $('#pb1').data('pillbox').deselectAll();
+                $('#pb2').data('pillbox').deselectAll();
+
+            };
+            self.selectAll = function () {
+                $('#pb1').data('pillbox').selectAll();
+                $('#pb2').data('pillbox').selectAll();
+
+            };
             self.vm2.visible(true);
         }
         var obj = new v();
         ko.applyBindings(obj);
-
-
 
     });
     })
