@@ -87,8 +87,8 @@ define(["knockout", "jquery"], function (ko, $) {
         var optionTemplate = params.optionTemplate;
         var optionsText = params.optionsText !== undefined ? params.optionsText : '';
        
-        $elem.find(".selected-options").prepend('<li class="placeholder" data-bind="visible:placeHolderVisible"><span  data-bind="text:placeHolder"></span></li>');
-        $elem.find(".selected-options").append('<li class="padder" >&nbsp;<span class="caret" data-bind="visible:placeHolderVisible"></span></li>');
+        $elem.find(".selected-options").prepend('<li class="placeholder" ></li>');
+        $elem.find(".selected-options").append('<li class="padder" >&nbsp;<span class="caret" ></span></li>');
         $elem.find(".selected-options").append('<li class="dummy" ><input class="" type="text"  /></li>');
 
       
@@ -147,7 +147,7 @@ define(["knockout", "jquery"], function (ko, $) {
             return len;
         };
 
-        function vm(params, elem) {
+        function vm(params, elem, componentInfo) {
             var self = this;
             self.id = elem[0].id;
             self.element = elem;
@@ -159,7 +159,10 @@ define(["knockout", "jquery"], function (ko, $) {
             self.pillbox = self.element.find('.pillbox');
             self.typeAhead(params.typeAhead !== undefined ? params.typeAhead : false);
             self.optionTemplate = params.optionTemplate;
-            self.showPillbox = ko.observable(params.showPillbox !== undefined ? params.showPillbox : true);
+            self.placeHolder = ko.observable();
+            self.dropdownRows = ko.observable();
+            self.showPillbox = ko.observable();
+           
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
             self.popover = ko.observable(params.popover !== undefined ? params.popover : '');
             //self.popoverTemplate = params.popoverTemplate !== undefined ? params.popoverTemplate : '';
@@ -167,7 +170,7 @@ define(["knockout", "jquery"], function (ko, $) {
             //remainingOptions contains all non selected options
             self.remainingOptions = ko.observableArray();
             self.caret = ko.observable(0);
-            self.inFocus = ko.observable(false);
+            self.showSelected = ko.observable(0);
             self.selStart = -1;
             self.showSelected = params.showSelected !== undefined ? params.showSelected : false;
             self.scrollbar = ko.observable();
@@ -179,7 +182,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
             });
             
-            self.optionValues = params.optionValues;
+           // self.optionValues = params.optionValues;
 
             self.searchText = function () {
                 if (self.input) {
@@ -199,7 +202,6 @@ define(["knockout", "jquery"], function (ko, $) {
             self.lastSingle = '';
             self.rows = ko.observable(params.rows);
             self.itemHeight = ko.observable(12);
-            self.dropdownRows = ko.observable(params.dropdownRows);
             self.height = ko.computed(function () {
                 if (!self.rows()) {
                     return;
@@ -208,13 +210,61 @@ define(["knockout", "jquery"], function (ko, $) {
                 var ht = self.rows() * bHeight ;
                 return ht.toFixed(0) + "px";
             });
-
-            self.dropheight = ko.computed(function () {
-                if (!self.dropdownRows()) {
-                    return;
+            self.hasSearchResults = function () {
+                return self.options().length < self.remainingOptions().length && self.options().length > 0;
+            };
+            function setPillBoxHeight() {
+                if (self.rows()) {
+                    var bHeight = self.element.find('.btn').height() + 6;
+                    var ht = self.rows() * bHeight ;
+                    return ht.toFixed(0) + "px";
+                    self.element.find('.selections').css('max-height',ht.toFixed(0) + "px");
+                } else {
+                    self.element.find('.selections').css('max-height','');
                 }
-                return self.dropdownRows() * self.itemHeight()-4 + "px";
-            });
+
+            };
+            function setDropdownHeight() {
+                if (self.dropdownRows()) {
+                    self.element.find('.options').css('max-height', self.dropdownRows() * self.itemHeight() - 4 + "px");
+                } else {
+                    self.element.find('.options').css('max-height', '');
+                }
+                
+            };
+            function setPillVisibility() {
+                window.setTimeout(function () {  if (self.showPillbox()) {
+                    self.element.find('li.selected-option').show();
+                } else{
+                    self.element.find('li.selected-option').hide();
+                }}, 100);
+               
+            };
+
+            function setPlaceHolderText() {
+                if (self.placeHolder()) {
+                    $elem.find(".selected-options li.placeholder").text(self.placeHolder() ? self.placeHolder() : "Choose");
+                }
+            };
+
+            function setPlaceHolder() {
+                setPillVisibility();
+                if (self.selectedOptions().length == 0 || (!self.showPillbox())) {
+                    self.element.find(".selected-options li.placeholder").show();
+                    self.element.find(".selected-options li.padder .caret").show();
+                }else{
+
+                    self.element.find(".selected-options li.placeholder").hide();
+                    self.element.find(".selected-options li.padder .caret").hide();
+                }
+                return ;
+            };
+            self.placeHolder.subscribe(setPlaceHolderText);
+            self.selectedOptions.subscribe(setPlaceHolder);
+            self.showPillbox.subscribe(setPlaceHolder);
+            self.itemHeight.subscribe(setDropdownHeight);
+            self.rows.subscribe(setPillBoxHeight);
+            self.dropdownRows.subscribe( setDropdownHeight);
 
             self.popoverContent = function (d) {
                 if (self.popover())
@@ -320,7 +370,8 @@ define(["knockout", "jquery"], function (ko, $) {
                 });
             };
 
-            self.removeItem = function (data, e) {
+            self.removeItem = function (e) {
+                var data = ko.dataFor(e.target);
                 data.selected(false);
                 self.selectedOptions.remove(data);
                 if (!self.showSelected) {
@@ -330,7 +381,6 @@ define(["knockout", "jquery"], function (ko, $) {
                 swallow(e);
             };
 
-            self.placeHolder = ko.observable(params.placeHolder ? params.placeHolder : "Choose");
 
             self.placeHolderVisible = ko.computed(function () {
                 return self.selectedOptions().length == 0 || (!self.showPillbox());
@@ -340,14 +390,14 @@ define(["knockout", "jquery"], function (ko, $) {
                 if (!data.selected()) {
                     data.selected(true);
                     if (!self.showSelected) {
-                        self.remainingOptions.remove(data);
+                        self.options.remove(data);
                     }
                     self.selectedOptions.push(data);
                 }
             };
 
-            self.handleClick = function (data,e) {
-
+            self.handleClick = function (e) {
+                var data = ko.dataFor(e.target);
                 self.showPopOver(data, e);
                 if (!data.selected()) {
                    self.selectItem(data,e);
@@ -377,7 +427,7 @@ define(["knockout", "jquery"], function (ko, $) {
                         return val[self.optionsText].toUpperCase().startsWith(_search.toUpperCase());
                     });
 
-                    if (_options.length == 1) {
+                    if (_options.length < self.remainingOptions().length && _options.length>0) {
                         self.hintText(_options[0][self.optionsText].substring(self.searchText().length));
                         if (self.lastSingle !== _options[0]) {
                             self.lastSingle = _options[0];
@@ -548,11 +598,11 @@ define(["knockout", "jquery"], function (ko, $) {
                 self.caret(getCaret(e.target));
                 var pos = self.caret();
 
-                if (self.options().length == 1) {
+                if (self.hasSearchResults()) {
 
                     if (e.which == 13 || e.which == 9) {
-                        self.clearAll();
                         self.selectItem(self.options()[0]);
+                        self.clearAll();
                         self.cancelKey = true;
                     } else if (e.which == 27) {
                         self.clearAll();
@@ -694,13 +744,13 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
             function addFocusClues() {
-                self.inFocus(true);
                 self.element.addClass("focus");
+                self.element.find('.selections').addClass("focus");
             };
 
             function removeFocusClues() {
-                self.inFocus(false);
                 self.element.removeClass("focus");
+                self.element.find('.selections').removeClass("focus");
                 self.element.find(".dummy>input").show();
             };
 
@@ -729,7 +779,8 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
             };
 
-            self.hoverItem = function (data, e) {
+            self.hoverItem = function ( e) {
+                var data = ko.dataFor(e.target);
                 self.clearHighlights();
                 data.highlight(true);
                 self.showPopOver(data, e);
@@ -779,8 +830,16 @@ define(["knockout", "jquery"], function (ko, $) {
 
            self.init = function () {
                self.element.data('pillbox', self);
+
+               self.placeHolder(params.placeHolder ? params.placeHolder : "Choose");
+               var ph = componentInfo.templateNodes[0];
+               if (ph) {
+                   var s = $.trim(ph.nodeValue)
+                   self.placeHolder(s ? s : self.placeHolder());
+               }
+               self.dropdownRows(params.dropdownRows);
                self.scrollbar(params.scrollbar !== undefined ? params.scrollbar : false);
-              
+               self.showPillbox(params.showPillbox !== undefined ? params.showPillbox : true);
                if (self.typeAhead()) {
                    self.element.find(".dropdown-menu").prepend('<li class="search"><input class="form-control" type="text"  /></li>');
                    self.input = self.element.find(".search>input")[0];
@@ -819,10 +878,11 @@ define(["knockout", "jquery"], function (ko, $) {
 
                 });
                 self.toggle.parent().on('shown.bs.dropdown', function (e) {
-                    if (self.dropdownRows()) {
                         var h = $(self.element.find('.options li')[0]).outerHeight();
                         self.itemHeight(h);
+                    if (self.dropdownRows()) {
                         self.itemHeight.valueHasMutated();
+                        self.itemHeight.notifySubscribers();
                     };
                     self.clearHighlights();
                         $e = $(e.target);
@@ -850,35 +910,25 @@ define(["knockout", "jquery"], function (ko, $) {
                 });
                
                 self.element.find(".options").on("wheel", self.onMouseWheel);
+                self.element.find(".options")
+                    .on("mouseover", "li", self.hoverItem)
+                    .on("click", "li", self.handleClick);
+                self.element.find(".selected-options").on("click",".btn>a.remover", self.removeItem);
            };
 
-           //return {
-           //    selectAll: self.selectAll,
-           //    deselectAll: self.deselectAll,
-           //    dropheight: self.dropheight,
-           //    handleClick: self.handleClick,
-           //    height: self.height,
-           //    hoverItem: self.hoverItem,
-           //    inFocus: self.inFocus,
-           //    init: self.init,
-           //    option: self.option,
-           //    options: self.options,
-           //    placeHolderVisible: self.placeHolderVisible,
-           //    placeHolder: self.placeHolder,
-
-           //    selectedOptions: self.selectedOptions,
-           //    showPillbox: self.showPillbox
-           //}
+           return {
+               selectAll: self.selectAll,
+               deselectAll: self.deselectAll,
+               init: self.init,
+               option: self.option,
+               options: self.options,
+               selectedOptions: self.selectedOptions
+           }
 
         };
 
 
-        var obj = new vm(params, $elem);
-        var ph = componentInfo.templateNodes[0];
-        if (ph) {
-            var s = $.trim(ph.nodeValue)
-        obj.placeHolder(s ? s : obj.placeHolder());
-        }
+        var obj = new vm(params, $elem, componentInfo);
         $elem.data('pillbox', self);
         return obj;
     }

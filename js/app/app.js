@@ -173,7 +173,7 @@ require(["moment"], function (moment) {
 
             self.setRows = function (data, e) {
                 $('#pb1').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? 0 : 6);
-                $('#pb2').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? 0 : 4);
+                $('#pb2').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? 0 : 3);
                 self.dropdownRowsSet(!self.dropdownRowsSet());
             };
 
