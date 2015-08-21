@@ -162,7 +162,7 @@ define(["knockout", "jquery"], function (ko, $) {
             self.placeHolder = ko.observable();
             self.dropdownRows = ko.observable();
             self.showPillbox = ko.observable();
-           
+            self.pillboxRows = ko.observable();
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
             self.popover = ko.observable(params.popover !== undefined ? params.popover : '');
             //self.popoverTemplate = params.popoverTemplate !== undefined ? params.popoverTemplate : '';
@@ -177,8 +177,12 @@ define(["knockout", "jquery"], function (ko, $) {
             self.scrollbar.subscribe(function (newvalue) {
                 if (self.scrollbar()) {
                     self.element.find(".options").addClass("no-scroll");
+                    //self.element.find(".pillbox").addClass("no-scroll");
+                    self.element.find(".selections").addClass("no-scroll");
                 } else{
                     self.element.find(".options").removeClass("no-scroll");
+                    //self.element.find(".pillbox").removeClass("no-scroll");
+                    self.element.find(".selections").removeClass("no-scroll");
                 }
             });
             
@@ -189,6 +193,7 @@ define(["knockout", "jquery"], function (ko, $) {
                     return $(self.input).val().substring(0, self.caret()).toUpperCase();
                 }
             };
+
             self.hintText = ko.observable("");
             self.displayText = ko.observable("");
 
@@ -200,24 +205,17 @@ define(["knockout", "jquery"], function (ko, $) {
             });
             self.filtering = false;
             self.lastSingle = '';
-            self.rows = ko.observable(params.rows);
             self.itemHeight = ko.observable(12);
-            self.height = ko.computed(function () {
-                if (!self.rows()) {
-                    return;
-                }
-                var bHeight = self.element.find('.btn').height() + 6;
-                var ht = self.rows() * bHeight ;
-                return ht.toFixed(0) + "px";
-            });
+          
+
             self.hasSearchResults = function () {
                 return self.options().length < self.remainingOptions().length && self.options().length > 0;
             };
+
             function setPillBoxHeight() {
-                if (self.rows()) {
+                if (self.pillboxRows() && self.selectedOptions().length>0) {
                     var bHeight = self.element.find('.btn').height() + 6;
-                    var ht = self.rows() * bHeight ;
-                    return ht.toFixed(0) + "px";
+                    var ht = self.pillboxRows() * bHeight ;
                     self.element.find('.selections').css('max-height',ht.toFixed(0) + "px");
                 } else {
                     self.element.find('.selections').css('max-height','');
@@ -232,9 +230,11 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
                 
             };
+
             function setPillVisibility() {
                 window.setTimeout(function () {  if (self.showPillbox()) {
                     self.element.find('li.selected-option').show();
+                setPillBoxHeight();
                 } else{
                     self.element.find('li.selected-option').hide();
                 }}, 100);
@@ -259,11 +259,12 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
                 return ;
             };
+
             self.placeHolder.subscribe(setPlaceHolderText);
             self.selectedOptions.subscribe(setPlaceHolder);
             self.showPillbox.subscribe(setPlaceHolder);
             self.itemHeight.subscribe(setDropdownHeight);
-            self.rows.subscribe(setPillBoxHeight);
+            self.pillboxRows.subscribe(setPillBoxHeight);
             self.dropdownRows.subscribe( setDropdownHeight);
 
             self.popoverContent = function (d) {
@@ -297,8 +298,8 @@ define(["knockout", "jquery"], function (ko, $) {
 
             self.option = function (name, value) {
                 switch (name.toUpperCase()) {
-                    case "ROWS":
-                        self.rows(parseInt(value));
+                    case "PILLBOXROWS":
+                        self.pillboxRows(parseInt(value));
                         break;
                     case "DROPDOWNROWS":
                         self.dropdownRows(parseInt(value));
@@ -370,8 +371,8 @@ define(["knockout", "jquery"], function (ko, $) {
                 });
             };
 
-            self.removeItem = function (e) {
-                var data = ko.dataFor(e.target);
+            self.removeItem = function (e, data) {
+                var data = data ? data : ko.dataFor(e.target);
                 data.selected(false);
                 self.selectedOptions.remove(data);
                 if (!self.showSelected) {
@@ -402,7 +403,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 if (!data.selected()) {
                    self.selectItem(data,e);
                 } else {
-                    self.removeItem(data, e);
+                    self.removeItem( e, data);
                 }
                 swallow(e);
                
@@ -788,13 +789,24 @@ define(["knockout", "jquery"], function (ko, $) {
             };
             
             self.onMouseWheel = function (e) {
-                if (!self.dropdownRows()) {
+                $e = $(e.target);
+                $p = $e.parents('.options');
+                $p = $p.length > 0 ? $p : $e.parents('.selections');
+                $p = $p.length > 0 ? $p : $e;
+                var isOptions = $p.hasClass('options');
+                if ((!self.dropdownRows() && isOptions) || (!self.pillboxRows() && !isOptions)) {
                     return;
                 }
+
                 if ($(e.target).closest('.popover').length > 0)
                     return false;
-
-                var factor = self.optionTemplate ? 30 : 20;
+                var factor = isOptions?(self.optionTemplate ? 30 : 20):10;
+                if (!isOptions) {
+                    var bHeight = self.element.find('.btn').height() + 6;
+                    $p.scrollTop($p.scrollTop() + (e.originalEvent.deltaY > 0 ? bHeight : bHeight * -1));
+                    return false;
+                }
+                //var factor = self.optionTemplate ? 30 : 20;
                 $c = self.element.find(".options");
                 var _overall = 0;
                 var scrolltop = 0;
@@ -831,6 +843,7 @@ define(["knockout", "jquery"], function (ko, $) {
            self.init = function () {
                self.element.data('pillbox', self);
 
+               self.pillboxRows(params.pillboxRows);
                self.placeHolder(params.placeHolder ? params.placeHolder : "Choose");
                var ph = componentInfo.templateNodes[0];
                if (ph) {
@@ -908,7 +921,8 @@ define(["knockout", "jquery"], function (ko, $) {
                     }
 
                 });
-               
+
+                self.element.find(".selections").on("wheel", self.onMouseWheel);
                 self.element.find(".options").on("wheel", self.onMouseWheel);
                 self.element.find(".options")
                     .on("mouseover", "li", self.hoverItem)

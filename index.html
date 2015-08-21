@@ -13,10 +13,14 @@
     <link href="src/pillbox.min.css" rel="stylesheet" />
     <script>
         hljs.initHighlightingOnLoad();</script>
-    <style>
-     
-   
+    <!--[if gte IE 9]
+    <style type="text/css">
+    .gradient {
+    filter: none;
+    }
     </style>
+    <![endif]-->
+
 </head>
 <body>
     <a href="https://github.com/ltdavids/bootstrap-ko-pillbox/" class="hide-on-med-and-down">
@@ -53,79 +57,85 @@
     </div>
 
     <div class="container">
-        
+
         <div class="row"><div style="min-height:30px">&nbsp;</div></div>
         <div class="row">
 
+            <div class="col-sm-6 col-sm-offset-1">
+                <div data-bind="with:vm1, visible:vm1.visible">
+                    <div data-bind="visible:visible" style="display:none">
+                        <div class="form-group-sm">
 
-            <div data-bind="with:vm1">
-                <div class="sample  form-inline col-sm-7 col-sm-offset-1" data-bind="visible:visible" style="display:none">
-                    <div class="form-group-sm">
-
-                        <div class="col-sm-6">
-                            <pillbox id="pb1" class="form-control"
-                                     params="optionValues:Movies,
+                            <div class="col-sm-7">
+                                <pillbox id="pb1" class="form-control"
+                                         params="optionValues:Movies,
                                          selectedOptions:SelectedMovies,
                                          optionsText:'text',
                                          placeHolder:'Choose Movies',
                                          popover:{template:'popover-template'},
-                                         dropdownRows:6,
+                                         dropdownRows:4,
+                                         pillboxRows: 3,
                                          showSelected:true,
                                          typeAhead:true,
                                          scrollbar:true"></pillbox>
-                        </div>
-                        <div class="col-sm-6 well" data-bind=" foreach:SelectedMovies, visible:ownerBoxVisible" style="display:none">
-                            <!--<div class="form-group-sm">-->
+                            </div>
+                            <div class="col-sm-5 well" data-bind=" foreach:SelectedMovies, visible:ownerBoxVisible" style="display:none">
+                                <!--<div class="form-group-sm">-->
                                 <div class="col-xs-3 thumbnail" style=" margin:0;height:70px;">
                                     <img data-bind="attr:{src:img}" style="max-height:100%;" />
                                 </div>
 
-                            <!--</div>-->
+                                <!--</div>-->
+                            </div>
                         </div>
-                    </div>
-                  
-                </div>
-                </div>
-            <div data-bind="with:vm2">
 
-                <div class="sample  form-inline col-sm-7 col-sm-offset-1" data-bind="visible:visible">
-                    <div class="form-group-sm" data-bind="visible:visible">
-                        <div class="col-sm-6">
-                            <pillbox id="pb2" class="form-control"
-                                     params="optionValues:Movies,
+                    </div>
+                </div>
+
+                <div data-bind="with:vm2, visible:vm2.visible">
+
+
+                    <div class="sample  form-inline" data-bind="visible:visible">
+                        <div class="form-group-sm" data-bind="visible:visible">
+                            <div class="col-sm-7">
+                                <pillbox id="pb2" class="form-control"
+                                         params="optionValues:Movies,
                                          selectedOptions:SelectedMovies,
                                          optionsText:'text',
                                          placeHolder:'Choose Movies',
                                          optionTemplate:'class-template',
                                          typeAhead:true,
                                          popover:{template:'popover-template'},
-                                         dropdownRows:3,
+                                         dropdownRows:4,
+                                         pillboxRows: 3,
                                          showSelected:true,
                                          scrollbar:true"></pillbox>
-                        </div>
-                        <div class="col-sm-6 well" data-bind=" foreach:SelectedMovies, visible:ownerBoxVisible" style="display:none">
-                            <div class="form-group-sm">
-                                <div class="col-xs-3 thumbnail" style=" margin:0;height:70px;">
-                                    <img data-bind="attr:{src:img}" style="max-height:100%;" />
-                                </div>
+                            </div>
+                            <div class="col-sm-5 well" data-bind=" foreach:SelectedMovies, visible:ownerBoxVisible" style="display:none">
+                                <div class="form-group-sm">
+                                    <div class="col-xs-3 thumbnail" style=" margin:0;height:70px;">
+                                        <img data-bind="attr:{src:img}" style="max-height:100%;" />
+                                    </div>
 
+                                </div>
                             </div>
                         </div>
+
+
                     </div>
-
-
                 </div>
             </div>
-            <div class="col-sm-3">
-                <div class="btn-group-vertical">
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:showTemplate, css:{'btn-success':vm2.visible}">
+            <div class="col-sm-4" id="pillbox-options">
+                <div style="text-align:center"><h3>Options</h3></div>
+                <div class="col-sm-7 ">
+                    <button type="button" data-option-name="optionTemplate" class="btn btn-default btn-check btn-block btn-sm" data-bind="click:showTemplate, css:{'btn-success':vm2.visible}">
                         <div>
                             <span class="glyphicon glyphicon-check" data-bind="visible:vm2.visible()" style="display:none"></span>
                             <span class="glyphicon glyphicon-unchecked" data-bind="visible:!vm2.visible()"></span>
                             <span> Option Template</span>
                         </div>
                     </button>
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:setPopoverTemplate, css:{'btn-success':popoverSet}">
+                    <button type="button" data-option-name="popover" class="btn btn-default btn-check btn-block btn-sm" data-bind="click:setPopoverTemplate, css:{'btn-success':popoverSet}">
                         <div>
                             <span class="glyphicon glyphicon-check" data-bind="visible:popoverSet" style="display:none"></span>
                             <span class="glyphicon glyphicon-unchecked" data-bind="visible:!popoverSet()"></span>
@@ -133,52 +143,83 @@
 
                         </div>
                     </button>
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:setRows, css:{'btn-success':dropdownRowsSet}">
-                        <span class="glyphicon glyphicon-check" data-bind="visible:dropdownRowsSet" style="display:none"></span>
-                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!dropdownRowsSet()"></span>
-                        <span> Dropdown Height</span>
+                    <div class="input-group input-group-sm btn-block">
+                        <span class="btn input-group-addon " data-option-name="dropdownRows" data-bind="click:toggleDropdownHeight, css:{'success':dropdownRowsSet}">
+                            <span class="glyphicon glyphicon-check" data-bind="visible:dropdownRowsSet" style="display:none"></span>
+                            <span class="glyphicon glyphicon-unchecked" data-bind="visible:!dropdownRowsSet()"></span>
+                            <span> Dropdown Height</span>
+                        </span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:setTypeAhead, css:{'btn-success':typeAheadSet}">
-                        <span class="glyphicon glyphicon-check" data-bind="visible:typeAheadSet" style="display:none"></span>
-                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!typeAheadSet()"></span>
-                        <span> Type Ahead</span>
+                        <input type="number" class="form-control" data-bind="value:dropdownHeight" aria-label="...">
+                    </div>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:setScrollbar, css:{'btn-success':scrollbarSet}">
-                        <span class="glyphicon glyphicon-check" data-bind="visible:scrollbarSet" style="display:none"></span>
-                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!scrollbarSet()"></span>
-                        <span> Hide Scrollbar</span>
+                    <div class="input-group input-group-sm btn-block">
+                        <span style="text-align:left;width:130px;" class="btn input-group-addon" data-option-name="pillboxRows" data-bind="click:togglePillboxHeight, css:{'success':pillboxRowsSet}">
+                            <span class="glyphicon glyphicon-check" data-bind="visible:pillboxRowsSet" style="display:none"></span>
+                            <span class="glyphicon glyphicon-unchecked" data-bind="visible:!pillboxRowsSet()"></span>
+                            <span data-bind="click:setRows"> Pillbox Height</span>
+                        </span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:setHidePillbox, css:{'btn-success':hidePillBoxSet}">
+                        <input type="number" class="form-control" data-bind="value:pillboxHeight" aria-label="...">
+                    </div>
+
+                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="hidePillbox" data-bind="click:setHidePillbox, css:{'btn-success':hidePillBoxSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:hidePillBoxSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!hidePillBoxSet()"></span>
                         <span> Custom Pillbox</span>
 
                     </button>
-                    <button type="button" class="btn btn-default btn-check" data-bind="click:setShowSelected, css:{'btn-success':showSelectedSet}">
-                        <span class="glyphicon glyphicon-check" data-bind="visible:showSelectedSet" style="display:none"></span>
-                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!showSelectedSet()"></span>
-                        <span> Show Selected Options</span>
+                </div>
+                <div class="col-sm-5">
+                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="scrollbar" data-bind="click:setScrollbar, css:{'btn-success':scrollbarSet}">
+                        <span class="glyphicon glyphicon-check" data-bind="visible:scrollbarSet" style="display:none"></span>
+                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!scrollbarSet()"></span>
+                        <span> Hide Scrollbar</span>
 
                     </button>
-                    <button type="button" class="btn btn-default" data-bind="click:selectAll">                       
+                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="showSelected" data-bind="click:setShowSelected, css:{'btn-success':showSelectedSet}">
+                        <span class="glyphicon glyphicon-check" data-bind="visible:showSelectedSet" style="display:none"></span>
+                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!showSelectedSet()"></span>
+                        <span> Show Selected</span>
+
+                    </button>
+                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="typeAhead" data-bind="click:setTypeAhead, css:{'btn-success':typeAheadSet}">
+                        <span class="glyphicon glyphicon-check" data-bind="visible:typeAheadSet" style="display:none"></span>
+                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!typeAheadSet()"></span>
+                        <span> Type Ahead</span>
+
+                    </button>
+                    <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:selectAll">
                         <span> Select All</span>
                     </button>
-                    <button type="button" class="btn btn-default" data-bind="click:deselectAll">
+                    <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:deselectAll">
                         <span> De-Select All</span>
                     </button>
+
                 </div>
             </div>
 
+            <div class="col-sm-10 col-sm-offset-1">
+
+                <pre><code>&lt;pillbox class=&quot;form-control&quot;
+        params=&quot;optionValues:Movies,
+        selectedOptions:SelectedMovies,
+        optionsText:&#39;text&#39;,<span data-bind="foreach:params">
+<span data-bind="attr:{id:name}" class="param">        <span class="param-text"><span data-bind="text:name">typeAhead</span>:<span data-bind="text:value">true</span><span data-bind="text:$parent.comma($data)"></span></span></span></span>&quot;&gt;
+        Choose Movies&lt;/pillbox&gt;
+        </code></pre>
+            </div>
 
         </div>
-        <div class="row"><div style="min-height:50px">&nbsp;</div></div>
+
+        <div class="row">
+            
+            <div style="min-height:50px">&nbsp;</div>
+        </div>
     </div>
 
     <script src="js/app/app.js"></script>
- 
+
     <script type="text/html" id="class-template">
 
         <div class="row " style="width:285px; height:75px">

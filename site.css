@@ -5,11 +5,33 @@
         .overliner {
             background-color: rgba(240, 250, 4, 0.47);
         }
-
+        .syntax-change{
+            color:orangered;
+        }
         code.hljs {
             background-color: #f5f5f5;
         }
+        span.param.syntax-change .param-text
+        /*,*/ 
+        /*span.param.syntax-change span.hljs-tag,*/ 
+        /*span.param.syntax-change span.hljs-value*/
+        {
+            color:rgb(57, 179, 215);
+            background-color:rgba(240, 250, 4, 0.47);
+            border-radius:4px;
+            border-width:0;
+            padding:4px;
+            margin-left:-4px;
+            margin-top:-5px;
+        }
+        .param-text{
+            color:rgb(0, 0, 255);
+        }
 
+        .input-group.hover .input-group-addon{
+              background-color: #449d44;
+    border-color: #398439;
+        }
         h1 {
             font-size: 4em;
         }
@@ -52,31 +74,48 @@
             /*line-height:24px;*/
             
         }
-
+        #pillbox-options{
+                margin-bottom: 20px;
+        }
+        .input-group-addon.primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(50, 118, 177);
+    border-color: rgb(40, 94, 142);
+}
+.input-group-addon.success {
+    color: rgb(255, 255, 255);
+    background-color: rgb(92, 184, 92);
+    border-color: rgb(76, 174, 76);
+}
+.input-group-addon.info {
+    color: rgb(255, 255, 255);
+    background-color: rgb(57, 179, 215);
+    border-color: rgb(38, 154, 188);
+}
+.input-group-addon.warning {
+    color: rgb(255, 255, 255);
+    background-color: rgb(240, 173, 78);
+    border-color: rgb(238, 162, 54);
+}
+.input-group-addon.danger {
+    color: rgb(255, 255, 255);
+    background-color: rgb(217, 83, 79);
+    border-color: rgb(212, 63, 58);
+}
 .page-head h1 {
     font-size: 3em;
 }
 .page-head p{
     font-size: 1.5em;
 }
+
         .page-head{
-             -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  width: 100%;
-  min-height: 110px;
-  border: none;
-  /*font: normal 16px/1 "Times New Roman", Times, serif;*/
-  color: rgba(255,255,255,1);
-  /*text-align: center;*/
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  background: url("http://enjoycss.com/bg-img/default/3_6.png");
-  background-position: 50% 50%;
-  -webkit-background-origin: padding-box;
-  background-origin: padding-box;
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
-  -webkit-background-size: auto auto;
-  background-size: auto auto;
+background: rgba(31,59,8,1);
+background: -moz-linear-gradient(-45deg, rgba(31,59,8,1) 0%, rgba(98,125,77,1) 100%);
+background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(31,59,8,1)), color-stop(100%, rgba(98,125,77,1)));
+background: -webkit-linear-gradient(-45deg, rgba(31,59,8,1) 0%, rgba(98,125,77,1) 100%);
+background: -o-linear-gradient(-45deg, rgba(31,59,8,1) 0%, rgba(98,125,77,1) 100%);
+background: -ms-linear-gradient(-45deg, rgba(31,59,8,1) 0%, rgba(98,125,77,1) 100%);
+background: linear-gradient(135deg, rgba(31,59,8,1) 0%, rgba(98,125,77,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1f3b08', endColorstr='#627d4d', GradientType=1 );
         }

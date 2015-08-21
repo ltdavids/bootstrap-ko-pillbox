@@ -10,6 +10,7 @@
         // js/lib/jquery-1.9.0.js, relative to
         // the HTML page.
         jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min',
+        jqueryui: '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min',
         knockout: '//cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min',
         bootstrap: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min',
         moment: '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min',
@@ -131,7 +132,26 @@ function projectSetUpVm(data) {
     instance.visible = ko.observable(false);
     instance.ownerBoxVisible = ko.observable(false);
 };
+function param(name, value) {
+    var self = this;
+    self.name = name;
+    self.value = value;
+    self.visible = ko.observable();
+    self.html = ko.computed(function () {
+        var rslt = "";
+        '</span><span id="pillboxRows" class="param" data-bind="visible:pillboxRowsSet" style="display:none"><br />        <span class="param-text">pillboxRows:<span class="hljs-tag" data-bind="text:pillboxHeight"></span>,</span></span>'
+    });
+};
 
+
+function paramvm() {
+    var self = this;
+    self.params = ko.observableArray();
+    self.html = ko.computed(function () {
+        var rslt = "";
+
+    });
+};
 require(["moment"], function (moment) {
 
     window.moment = moment;
@@ -140,7 +160,7 @@ require(["moment"], function (moment) {
         window.ko = ko;
         window.$ = jQuery;
         require([
-    "bootstrap"], function () {
+    "bootstrap", "jqueryui"], function () {
 
 
 
@@ -152,13 +172,52 @@ require(["moment"], function (moment) {
         function v() {
             var self = this;
             self.dropdownRowsSet = ko.observable(true);
+            self.pillboxRowsSet = ko.observable(true);
             self.popoverSet = ko.observable(true);
+            self.dropdownHeight = ko.observable(4);
+            self.pillboxHeight = ko.observable(3);
             self.typeAheadSet = ko.observable(true);
             self.hidePillBoxSet = ko.observable(false);
             self.scrollbarSet = ko.observable(true);
             self.showSelectedSet = ko.observable(true);
             self.vm1 = new projectSetUpVm();
             self.vm2 = new projectSetUpVm();
+            self.params = ko.observableArray();
+            self.allparams = [];
+            self.allparams["typeAhead"] = new param("typeAhead", true);
+            self.allparams["showSelected"] = new param("showSelected", true);
+            self.allparams["optionTemplate"] = new param("optionTemplate", "'class-template'");
+            self.allparams["dropdownRows"] = new param("dropdownRows", 4);
+            self.allparams["pillboxRows"] = new param("pillboxRows", 3);
+            self.allparams["popover"] = new param("popover", '{ template: \'popover-template\' }');
+            self.allparams["scrollbar"] = new param("scrollbar", false);
+            self.allparams["hidePillBox"] = new param("hidePillBox", true);
+            self.params.push(self.allparams["typeAhead"]);
+            self.params.push(self.allparams["showSelected"]);
+            self.params.push(self.allparams["optionTemplate"]);
+            self.params.push(self.allparams["dropdownRows"]);
+            self.params.push(self.allparams["pillboxRows"]);
+            self.params.push(self.allparams["popover"]);
+            self.params.push(self.allparams["scrollbar"]);
+            //self.params.push(self.allparams["hidePillBox"]);
+            self.resetparam = function (name,value) {
+                if (value) {
+                    self.params.push(self.allparams[name]);
+                } else {
+                    self.params.remove(self.allparams[name]);
+                }
+            }
+            self.pillboxHeight.subscribe(function () {
+         
+                self.pillboxRowsSet(self.pillboxHeight() > 0);
+
+                self.setPillboxRows();
+
+            });
+            self.dropdownHeight.subscribe(function () {
+                self.dropdownRowsSet(self.dropdownHeight() > 0);
+                self.setRows();
+            });
 
             self.showTemplate = function (data, e) {
                 if (self.vm1.visible()) {
@@ -169,18 +228,77 @@ require(["moment"], function (moment) {
                     self.vm1.visible(true);
                     self.vm2.visible(false);
                 }
+                self.resetparam("optionTemplate", self.vm2.visible());
+                if (self.vm2.visible()) {
+
+                    highlightProperty("optionTemplate");
+                }
+
             };
 
-            self.setRows = function (data, e) {
-                $('#pb1').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? 0 : 6);
-                $('#pb2').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? 0 : 3);
+            self.comma = function (data) {
+                var i = self.params.indexOf(data);
+                if (i < self.params().length - 1)
+                    return ",";
+
+            };
+
+            self.toggleDropdownHeight = function (data, e) {
+              
                 self.dropdownRowsSet(!self.dropdownRowsSet());
+                self.resetparam("dropdownRows", self.dropdownRowsSet());
+                self.setRows();
+                if (self.dropdownRowsSet()) {
+
+                    highlightProperty("dropdownRows");
+                }
+            };
+            var prevanimation = '';
+            function highlightProperty(id) {
+                
+             
+                    $("#" + id).addClass("syntax-change");
+                return;
+                if (prevanimation) {
+                    //$("#" + prevanimation).addClass()
+                    $("#" + prevanimation).clearQueue("fx").finish(true,true);
+                    $("#" + prevanimation).removeClass("syntax-change");
+                }
+                    prevanimation = id;
+                    for (i = 0; i < 1; ++i) {
+                        $("#" + id).addClass("syntax-change", 200, "linear")
+                        .removeClass("syntax-change", 1000, "linear")
+                }
+
+              
+            }
+            self.togglePillboxHeight = function (data, e) {
+             
+                self.pillboxRowsSet(!self.pillboxRowsSet());
+                self.resetparam("pillboxRows", self.pillboxRowsSet());
+                self.setPillboxRows();
+                if (self.pillboxRowsSet())
+                highlightProperty("pillboxRows");
+            };
+            self.setRows = function (data, e) {
+                $('#pb1').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? self.dropdownHeight():0);
+                $('#pb2').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? self.dropdownHeight():0);
+               // self.dropdownRowsSet(!self.dropdownRowsSet());
             };
 
+            self.setPillboxRows = function (data, e) {
+                $('#pb1').data('pillbox').option('pillBoxRows', self.pillboxRowsSet() ? self.pillboxHeight(): 0  );
+                $('#pb2').data('pillbox').option('pillBoxRows', self.pillboxRowsSet() ? self.pillboxHeight() : 0);
+               // self.pillboxRowsSet(!self.pillboxRowsSet());
+            };
             self.setTypeAhead = function (data, e) {
                 $('#pb1').data('pillbox').option('typeahead', !$('#pb1').data('pillbox').option('typeahead'));
                 $('#pb2').data('pillbox').option('typeahead', !$('#pb2').data('pillbox').option('typeahead'));
                 self.typeAheadSet(!self.typeAheadSet());
+                self.resetparam("typeAhead", self.typeAheadSet());
+                if(self.typeAheadSet())
+                    highlightProperty("typeAhead");
+
             };
 
             self.setHidePillbox = function (data, e) {
@@ -188,8 +306,12 @@ require(["moment"], function (moment) {
                 $('#pb2').data('pillbox').option('showpillbox', !$('#pb2').data('pillbox').option('showpillbox'));
 
                 self.hidePillBoxSet(!self.hidePillBoxSet());
+                self.resetparam("hidePillBox", self.hidePillBoxSet());
                 self.vm1.ownerBoxVisible(self.hidePillBoxSet());
                 self.vm2.ownerBoxVisible(self.hidePillBoxSet());
+
+                if (self.hidePillBoxSet())
+                    highlightProperty("hidePillBox");
             };
 
 
@@ -197,6 +319,9 @@ require(["moment"], function (moment) {
                 $('#pb1').data('pillbox').option('scrollbar', !$('#pb1').data('pillbox').option('scrollbar'));
                 $('#pb2').data('pillbox').option('scrollbar', !$('#pb2').data('pillbox').option('scrollbar'));
                 self.scrollbarSet(!self.scrollbarSet());
+                self.resetparam("scrollbar", self.scrollbarSet());
+                if (self.scrollbarSet())
+                    highlightProperty("scrollbar");
             };
 
             self.setShowSelected = function (data, e) {
@@ -205,6 +330,9 @@ require(["moment"], function (moment) {
                 $('#pb1').data('pillbox').option('showSelected', !$('#pb1').data('pillbox').option('showSelected'));
                 $('#pb2').data('pillbox').option('showSelected', !$('#pb2').data('pillbox').option('showSelected'));
                 self.showSelectedSet(!self.showSelectedSet());
+                self.resetparam("showSelected", self.showSelectedSet());
+                if (self.showSelectedSet())
+                    highlightProperty("showSelected");
             };
             self.setPopoverTemplate = function () {
                 $('#pb1').data('pillbox').option('popover', self.popoverSet() ? '' : {
@@ -214,6 +342,9 @@ require(["moment"], function (moment) {
                     template: 'popover-template'
                 });
                 self.popoverSet(!self.popoverSet());
+                self.resetparam("popover", self.popoverSet());
+                if (self.popoverSet())
+                    highlightProperty("popover");
 
             };
             self.deselectAll = function () {
@@ -226,6 +357,27 @@ require(["moment"], function (moment) {
                 $('#pb2').data('pillbox').selectAll();
 
             };
+            $('#pillbox-options .btn').hover(function (e) {
+                $e = $(e.target);
+                var b = $e.closest('.btn')[0];
+                nm = $e.closest('.btn').attr('data-option-name')  ;
+                if (e.type === "mouseenter") {
+                    $("#" + nm).addClass("syntax-change");
+                } else {
+                    $("#" + nm).removeClass("syntax-change");
+
+                }
+                swallow(e);
+            });
+
+            $(".input-group-addon").hover(function (e) {
+                $e = $(e.target).closest('.input-group');
+                if (e.type === 'mouseleave') 
+
+                $e.removeClass('hover');
+                 else
+                $e.addClass('hover');
+            });
             self.vm2.visible(true);
         }
         var obj = new v();

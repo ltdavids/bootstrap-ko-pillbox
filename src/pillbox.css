@@ -112,11 +112,11 @@ pillbox .pillbox .options li.highlight.selected {
 pillbox .pillbox .options .popover-content {
   min-width: 140px;
 }
-pillbox .pillbox .options.no-scroll {
-  overflow: hidden;
-}
 pillbox .open {
   position: relative;
+}
+pillbox .no-scroll {
+  overflow: hidden;
 }
 pillbox.form-control {
   height: auto !important;
