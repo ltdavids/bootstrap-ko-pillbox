@@ -176,6 +176,30 @@ pillbox.focus {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 
+pillbox[disabled]{
+    border-color: #ccc;
+    -webkit-box-shadow:0;
+    box-shadow:0;
+    .placeholder{
+
+    color:#888;
+    }
+    .selections{
+         ul .btn {
+                    cursor: default;
+                    margin: 1px 1px 1px 1px;
+                    border-color: #ccc;
+                    background-color: white;
+
+                    a { color:#888;
+                        text-decoration: none;
+                        cursor: default;
+                        margin-right: 3px;
+                    }
+                }
+    }
+}
+
 .form-group pillbox.form-control {
     min-height: 34px;
     

@@ -181,6 +181,7 @@ require(["moment"], function (moment) {
             self.scrollbarSet = ko.observable(true);
             self.showSelectedSet = ko.observable(true);
             self.multipleSet = ko.observable(true);
+            self.disableSet = ko.observable(false);
             self.autoCloseSet = ko.observable(false);
             self.vm1 = new projectSetUpVm();
             self.vm2 = new projectSetUpVm();
@@ -383,6 +384,13 @@ require(["moment"], function (moment) {
                 $('#pb2').data('pillbox').selectAll();
 
             };
+
+            self.setDisable = function () {
+                self.disableSet(!self.disableSet());
+                $('#pb1').data('pillbox').option('disabled', self.disableSet());
+                $('#pb2').data('pillbox').option('disabled', self.disableSet());
+               
+            }
             $('#pillbox-options .btn').hover(function (e) {
                 $e = $(e.target);
                 var b = $e.closest('.btn')[0];
@@ -395,6 +403,7 @@ require(["moment"], function (moment) {
                 }
                 swallow(e);
             });
+
 
             $(".input-group-addon").hover(function (e) {
                 $e = $(e.target).closest('.input-group');

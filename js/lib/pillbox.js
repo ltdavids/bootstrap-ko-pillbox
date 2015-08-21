@@ -208,10 +208,13 @@ define(["knockout", "jquery"], function (ko, $) {
             self.filtering = false;
             self.lastSingle = '';
             self.itemHeight = ko.observable(12);
-          
 
             self.hasSearchResults = function () {
                 return self.options().length < self.remainingOptions().length && self.options().length > 0;
+            };
+
+            function disabled() {
+                return self.element.attr('disabled') !== undefined;
             };
 
             function setPillBoxHeight() {
@@ -367,6 +370,21 @@ define(["knockout", "jquery"], function (ko, $) {
                         return self.autoClose();
 
                         break;
+                    case "DISABLED":
+                        if (value !== undefined) {
+                            if (value) {
+                            self.element.attr('disabled', 'disabled');
+                            self.element.find(".dummy>input").hide();
+
+                            } else if(value === false){
+                            self.element.removeAttr('disabled');
+                            self.element.find(".dummy>input").show();
+
+                            }
+                        }
+                        return disabled();
+
+                        break;
                     case "POPOVER":
                         if (!value) {
                             self.element.find(".options li").popover('destroy');
@@ -401,13 +419,16 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
             self.removeItem = function (e, data) {
-                var data = data ? data : ko.dataFor(e.target);
-                data.selected(false);
-                self.selectedOptions.remove(data);
-                if (!self.showSelected) {
-                    self.remainingOptions.push(data);
+                if (!disabled()) {
+
+                    var data = data ? data : ko.dataFor(e.target);
+                    data.selected(false);
+                    self.selectedOptions.remove(data);
+                    if (!self.showSelected) {
+                        self.remainingOptions.push(data);
+                    }
+                    self.clearAll();
                 }
-                self.clearAll();
                 swallow(e);
             };
 
@@ -939,7 +960,7 @@ define(["knockout", "jquery"], function (ko, $) {
                     } 
                 });
                 self.toggle.parent().on('show.bs.dropdown', function (e) {
-                    if (self.element.attr('disabled')){
+                    if (disabled()) {
 
                         return false;
                     }
