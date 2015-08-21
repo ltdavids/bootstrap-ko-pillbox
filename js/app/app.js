@@ -180,11 +180,14 @@ require(["moment"], function (moment) {
             self.hidePillBoxSet = ko.observable(false);
             self.scrollbarSet = ko.observable(true);
             self.showSelectedSet = ko.observable(true);
+            self.multipleSet = ko.observable(true);
+            self.autoCloseSet = ko.observable(false);
             self.vm1 = new projectSetUpVm();
             self.vm2 = new projectSetUpVm();
             self.params = ko.observableArray();
             self.allparams = [];
             self.allparams["typeAhead"] = new param("typeAhead", true);
+            self.allparams["multiple"] = new param("multiple", true);
             self.allparams["showSelected"] = new param("showSelected", true);
             self.allparams["optionTemplate"] = new param("optionTemplate", "'class-template'");
             self.allparams["dropdownRows"] = new param("dropdownRows", 4);
@@ -192,12 +195,15 @@ require(["moment"], function (moment) {
             self.allparams["popover"] = new param("popover", '{ template: \'popover-template\' }');
             self.allparams["scrollbar"] = new param("scrollbar", false);
             self.allparams["hidePillBox"] = new param("hidePillBox", true);
+            self.allparams["autoClose"] = new param("autoClose", true);
             self.params.push(self.allparams["typeAhead"]);
             self.params.push(self.allparams["showSelected"]);
             self.params.push(self.allparams["optionTemplate"]);
             self.params.push(self.allparams["dropdownRows"]);
             self.params.push(self.allparams["pillboxRows"]);
             self.params.push(self.allparams["popover"]);
+            self.params.push(self.allparams["multiple"]);
+            self.params.push(self.allparams["autoClose"]);
             self.params.push(self.allparams["scrollbar"]);
             //self.params.push(self.allparams["hidePillBox"]);
             self.resetparam = function (name,value) {
@@ -301,6 +307,25 @@ require(["moment"], function (moment) {
 
             };
 
+            self.setMultiple = function (data, e) {
+                $('#pb1').data('pillbox').option('multiple', !$('#pb1').data('pillbox').option('multiple'));
+                $('#pb2').data('pillbox').option('multiple', !$('#pb2').data('pillbox').option('multiple'));
+                self.multipleSet(!self.multipleSet());
+                self.resetparam("multiple", self.multipleSet());
+                if (self.multipleSet())
+                    highlightProperty("multiple");
+
+            };
+
+            self.setAutoClose = function (data, e) {
+                $('#pb1').data('pillbox').option('autoClose', !$('#pb1').data('pillbox').option('autoClose'));
+                $('#pb2').data('pillbox').option('autoClose', !$('#pb2').data('pillbox').option('autoClose'));
+                self.autoCloseSet(!self.autoCloseSet());
+                self.resetparam("autoClose", self.autoCloseSet());
+                if (self.autoCloseSet())
+                    highlightProperty("autoClose");
+
+            };
             self.setHidePillbox = function (data, e) {
                 $('#pb1').data('pillbox').option('showpillbox', !$('#pb1').data('pillbox').option('showpillbox'));
                 $('#pb2').data('pillbox').option('showpillbox', !$('#pb2').data('pillbox').option('showpillbox'));
@@ -334,6 +359,7 @@ require(["moment"], function (moment) {
                 if (self.showSelectedSet())
                     highlightProperty("showSelected");
             };
+
             self.setPopoverTemplate = function () {
                 $('#pb1').data('pillbox').option('popover', self.popoverSet() ? '' : {
                     template: 'popover-template'

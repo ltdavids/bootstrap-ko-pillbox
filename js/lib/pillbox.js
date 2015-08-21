@@ -87,7 +87,7 @@ define(["knockout", "jquery"], function (ko, $) {
         var optionTemplate = params.optionTemplate;
         var optionsText = params.optionsText !== undefined ? params.optionsText : '';
        
-        $elem.find(".selected-options").prepend('<li class="placeholder" ></li>');
+        $elem.find(".selected-options").prepend('<li class="placeholder"></li>');
         $elem.find(".selected-options").append('<li class="padder" >&nbsp;<span class="caret" ></span></li>');
         $elem.find(".selected-options").append('<li class="dummy" ><input class="" type="text"  /></li>');
 
@@ -163,6 +163,8 @@ define(["knockout", "jquery"], function (ko, $) {
             self.dropdownRows = ko.observable();
             self.showPillbox = ko.observable();
             self.pillboxRows = ko.observable();
+            self.multiple = ko.observable();
+            self.autoClose = ko.observable();
             self.optionsText = params.optionsText !== undefined ? params.optionsText : '';
             self.popover = ko.observable(params.popover !== undefined ? params.popover : '');
             //self.popoverTemplate = params.popoverTemplate !== undefined ? params.popoverTemplate : '';
@@ -232,27 +234,34 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
             function setPillVisibility() {
-                window.setTimeout(function () {  if (self.showPillbox()) {
+                window.setTimeout(function () {
+                    if (self.showPillbox() && self.multiple()) {
                     self.element.find('li.selected-option').show();
-                setPillBoxHeight();
+                    setPillBoxHeight();
                 } else{
+
+                        self.element.find('.selected-options').css('visibility', 'visible');
                     self.element.find('li.selected-option').hide();
-                }}, 100);
+                }}, 0);
                
             };
 
             function setPlaceHolderText() {
-                if (self.placeHolder()) {
+                var _emptyValText = self.placeHolder() ? self.placeHolder() : "Choose";
+                if (!self.multiple()) {
+                    $elem.find(".selected-options li.placeholder").text(self.selectedOptions().length > 0 ? self.selectedOptions()[0][optionsText] : _emptyValText);
+                } else if (self.placeHolder()) {
                     $elem.find(".selected-options li.placeholder").text(self.placeHolder() ? self.placeHolder() : "Choose");
                 }
             };
 
             function setPlaceHolder() {
+                setPlaceHolderText()
                 setPillVisibility();
-                if (self.selectedOptions().length == 0 || (!self.showPillbox())) {
+                if (self.selectedOptions().length == 0 || !self.showPillbox()) {
                     self.element.find(".selected-options li.placeholder").show();
                     self.element.find(".selected-options li.padder .caret").show();
-                }else{
+                }else if(self.multiple()){
 
                     self.element.find(".selected-options li.placeholder").hide();
                     self.element.find(".selected-options li.padder .caret").hide();
@@ -260,6 +269,10 @@ define(["knockout", "jquery"], function (ko, $) {
                 return ;
             };
 
+            self.placeHolderVisible = ko.computed(function () {
+                console.debug("placeHolderVisible " + self.selectedOptions().length == 0 || !self.showPillbox() && self.multiple());
+                return self.selectedOptions().length == 0 || !self.showPillbox() && self.multiple();
+            });
             self.placeHolder.subscribe(setPlaceHolderText);
             self.selectedOptions.subscribe(setPlaceHolder);
             self.showPillbox.subscribe(setPlaceHolder);
@@ -338,6 +351,22 @@ define(["knockout", "jquery"], function (ko, $) {
                         return self.showPillbox();
                     
                         break;
+                    case "MULTIPLE":
+                        if (value !== undefined) {
+                            self.multiple(value);
+                            self.clearSelections();
+                            setPlaceHolder();
+                        }
+                        return self.multiple();
+
+                        break;
+                    case "AUTOCLOSE":
+                        if (value !== undefined) {
+                            self.autoClose(value);
+                        }
+                        return self.autoClose();
+
+                        break;
                     case "POPOVER":
                         if (!value) {
                             self.element.find(".options li").popover('destroy');
@@ -383,17 +412,21 @@ define(["knockout", "jquery"], function (ko, $) {
             };
 
 
-            self.placeHolderVisible = ko.computed(function () {
-                return self.selectedOptions().length == 0 || (!self.showPillbox());
-            });
  
             self.selectItem = function (data, e) {
                 if (!data.selected()) {
+                    if (!self.multiple()) {
+                        self.clearSelections();
+                        self.element.find('.selected-options').css('visibility','hidden');
+                    }
                     data.selected(true);
                     if (!self.showSelected) {
                         self.options.remove(data);
                     }
                     self.selectedOptions.push(data);
+                    if (self.autoClose() && !self.multiple())
+                        closeDropDown();
+                    //setPlaceHolder();
                 }
             };
 
@@ -852,6 +885,8 @@ define(["knockout", "jquery"], function (ko, $) {
                }
                self.dropdownRows(params.dropdownRows);
                self.scrollbar(params.scrollbar !== undefined ? params.scrollbar : false);
+               self.multiple(params.multiple !== undefined ? params.multiple : false);
+               self.autoClose(params.autoClose !== undefined ? params.autoClose : false);
                self.showPillbox(params.showPillbox !== undefined ? params.showPillbox : true);
                if (self.typeAhead()) {
                    self.element.find(".dropdown-menu").prepend('<li class="search"><input class="form-control" type="text"  /></li>');

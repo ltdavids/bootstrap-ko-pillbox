@@ -71,6 +71,7 @@
                                          params="optionValues:Movies,
                                          selectedOptions:SelectedMovies,
                                          optionsText:'text',
+                                         multiple:true,
                                          placeHolder:'Choose Movies',
                                          popover:{template:'popover-template'},
                                          dropdownRows:4,
@@ -98,11 +99,12 @@
                     <div class="sample  form-inline" data-bind="visible:visible">
                         <div class="form-group-sm" data-bind="visible:visible">
                             <div class="col-sm-7">
-                                <pillbox id="pb2" class="form-control"
+                                <pillbox id="pb2" class="form-control  success"
                                          params="optionValues:Movies,
                                          selectedOptions:SelectedMovies,
                                          optionsText:'text',
                                          placeHolder:'Choose Movies',
+                                         multiple:true,
                                          optionTemplate:'class-template',
                                          typeAhead:true,
                                          popover:{template:'popover-template'},
@@ -169,6 +171,12 @@
                         <span> Custom Pillbox</span>
 
                     </button>
+                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="multiple" data-bind="click:setMultiple, css:{'btn-success':multipleSet}">
+                        <span class="glyphicon glyphicon-check" data-bind="visible:multipleSet" style="display:none"></span>
+                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!multipleSet()"></span>
+                        <span> Multiple</span>
+
+                    </button>
                 </div>
                 <div class="col-sm-5">
                     <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="scrollbar" data-bind="click:setScrollbar, css:{'btn-success':scrollbarSet}">
@@ -187,6 +195,12 @@
                         <span class="glyphicon glyphicon-check" data-bind="visible:typeAheadSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!typeAheadSet()"></span>
                         <span> Type Ahead</span>
+
+                    </button>
+                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="autoClose" data-bind="click:setAutoClose, css:{'btn-success':autoCloseSet}">
+                        <span class="glyphicon glyphicon-check" data-bind="visible:autoCloseSet" style="display:none"></span>
+                        <span class="glyphicon glyphicon-unchecked" data-bind="visible:!autoCloseSet()"></span>
+                        <span> Auto Close</span>
 
                     </button>
                     <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:selectAll">
