@@ -171,6 +171,7 @@ define(["knockout", "jquery"], function (ko, $) {
             self.selectedOptions = params.selectedOptions? params.selectedOptions: ko.observableArray();
             //remainingOptions contains all non selected options
             self.remainingOptions = ko.observableArray();
+            self.availableOptions = ko.observableArray();
             self.caret = ko.observable(0);
             self.showSelected = ko.observable(0);
             self.selStart = -1;
@@ -188,7 +189,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
             });
             
-           // self.optionValues = params.optionValues;
+            self.optionValues = ko.isObservable(params.optionValues) ? params.optionValues : ko.observableArray(params.optionValues) ;
 
             self.searchText = function () {
                 if (self.input) {
@@ -199,18 +200,12 @@ define(["knockout", "jquery"], function (ko, $) {
             self.hintText = ko.observable("");
             self.displayText = ko.observable("");
 
-                       
-            //options contains a filtered copy of options;
-            self.options = ko.observableArray(ko.unwrap(self.remainingOptions).slice(0));
-            self.options.sort(function (a, b) {
-                return (a[self.optionsText] < b[self.optionsText]) ? -1 : (a[self.optionsText] > b[self.optionsText]) ? 1 : 0;
-            });
             self.filtering = false;
             self.lastSingle = '';
             self.itemHeight = ko.observable(12);
 
             self.hasSearchResults = function () {
-                return self.options().length < self.remainingOptions().length && self.options().length > 0;
+                return self.availableOptions().length < self.remainingOptions().length && self.availableOptions().length > 0;
             };
 
             function disabled() {
@@ -227,6 +222,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
 
             };
+
             function setDropdownHeight() {
                 if (self.dropdownRows()) {
                     self.element.find('.options').css('max-height', self.dropdownRows() * self.itemHeight() - 4 + "px");
@@ -242,8 +238,7 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.element.find('li.selected-option').show();
                     setPillBoxHeight();
                 } else{
-
-                        self.element.find('.selected-options').css('visibility', 'visible');
+                    self.element.find('.selected-options').css('visibility', 'visible');
                     self.element.find('li.selected-option').hide();
                 }}, 0);
                
@@ -252,9 +247,9 @@ define(["knockout", "jquery"], function (ko, $) {
             function setPlaceHolderText() {
                 var _emptyValText = self.placeHolder() ? self.placeHolder() : "Choose";
                 if (!self.multiple()) {
-                    $elem.find(".selected-options li.placeholder").text(self.selectedOptions().length > 0 ? self.selectedOptions()[0][optionsText] : _emptyValText);
+                    self.element.find(".selected-options li.placeholder").text(self.selectedOptions().length > 0 ? self.selectedOptions()[0][optionsText] : _emptyValText);
                 } else if (self.placeHolder()) {
-                    $elem.find(".selected-options li.placeholder").text(self.placeHolder() ? self.placeHolder() : "Choose");
+                    self.element.find(".selected-options li.placeholder").text(self.placeHolder() ? self.placeHolder() : "Choose");
                 }
             };
 
@@ -272,16 +267,46 @@ define(["knockout", "jquery"], function (ko, $) {
                 return ;
             };
 
-            self.placeHolderVisible = ko.computed(function () {
-                console.debug("placeHolderVisible " + self.selectedOptions().length == 0 || !self.showPillbox() && self.multiple());
+            function resetPopovers() {
+                $items = self.element.find(".options li");
+                $items.popover('hide');
+                if (self.popover()) {
+                    var _placement = $(window).width() > 400 ? 'right auto' : 'bottom auto';
+                    $items.popover({ html: true, placement: _placement, content: self.popoverContent() });
+                }
+            };
+
+            self.placeHolderVisible = ko.computed(function () {              
                 return self.selectedOptions().length == 0 || !self.showPillbox() && self.multiple();
             });
+
             self.placeHolder.subscribe(setPlaceHolderText);
             self.selectedOptions.subscribe(setPlaceHolder);
             self.showPillbox.subscribe(setPlaceHolder);
             self.itemHeight.subscribe(setDropdownHeight);
             self.pillboxRows.subscribe(setPillBoxHeight);
             self.dropdownRows.subscribe( setDropdownHeight);
+            self.optionValues.subscribe(function (newvalue) {
+                self.availableOptions.removeAll();
+                var ar = ko.unwrap(self.optionValues).slice(0);
+                $.each(ar, function (key, val) {
+                    val.selected = ko.observable(false);
+                    val.highlight = ko.observable(false);
+                });
+                self.remainingOptions(ar);
+            
+                var ar2 = ko.unwrap(self.selectedOptions).slice(0);
+                self.selectedOptions.removeAll();
+               self.filter();
+                $.each(ar2, function (key, val) {
+               
+                        var item = self.remainingOptions().filter(function (v) {
+                            return v[optionsText] === val[optionsText];
+                        })[0];
+                        selectItem(val);
+                  
+                });
+            });
 
             self.popoverContent = function (d) {
                 if (self.popover())
@@ -303,14 +328,6 @@ define(["knockout", "jquery"], function (ko, $) {
                 return (_html);
             };
 
-            self.resetPopovers = function () {
-                $items = self.element.find(".options li");
-                $items.popover('hide');
-                if (self.popover()) {
-                    var _placement = $(window).width() > 400 ? 'right auto' : 'bottom auto';
-                    $items.popover({ html: true, placement: _placement, content: self.popoverContent() });
-                }
-            };
 
             self.option = function (name, value) {
                 switch (name.toUpperCase()) {
@@ -418,7 +435,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 });
             };
 
-            self.removeItem = function (e, data) {
+            function removeItem(data, e) {
                 if (!disabled()) {
 
                     var data = data ? data : ko.dataFor(e.target);
@@ -432,9 +449,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 swallow(e);
             };
 
-
- 
-            self.selectItem = function (data, e) {
+            function selectItem(data, e) {
                 if (!data.selected()) {
                     if (!self.multiple()) {
                         self.clearSelections();
@@ -442,7 +457,7 @@ define(["knockout", "jquery"], function (ko, $) {
                     }
                     data.selected(true);
                     if (!self.showSelected) {
-                        self.options.remove(data);
+                        self.availableOptions.remove(data);
                     }
                     self.selectedOptions.push(data);
                     if (self.autoClose() && !self.multiple())
@@ -451,25 +466,30 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
             };
 
-            self.handleClick = function (e) {
+            function onRemovePillClick(e) {
+                var data = data ? data : ko.dataFor(e.target);
+                removeItem(data, e);
+            };
+
+            self.onOptionClick = function (e) {
                 var data = ko.dataFor(e.target);
-                self.showPopOver(data, e);
+                showPopOver(data, e);
                 if (!data.selected()) {
-                   self.selectItem(data,e);
+                    selectItem(data, e);
                 } else {
-                    self.removeItem( e, data);
+                    removeItem( data, e);
                 }
                 swallow(e);
-               
-             
-            }
+
+
+            };
 
             self.filter = function (val) {
                 if (!self.typeAhead()) {
-                    self.options(self.remainingOptions());
+                    self.availableOptions(self.remainingOptions());
 
-                    self.options.valueHasMutated();
-                    self.options.notifySubscribers();
+                    self.availableOptions.valueHasMutated();
+                    self.availableOptions.notifySubscribers();
                   
                     return;
                 }
@@ -494,72 +514,78 @@ define(["knockout", "jquery"], function (ko, $) {
                     } else if (self.lastSingle) {
                         var x = 0;
                         self.lastSingle = '';
-                        self.clearHintText();
+                        clearHintText();
                     }
                 }
                
 
                 self.sort(_options);
-                self.options(_options);
-                self.options.valueHasMutated();
-                self.options.notifySubscribers();
-                self.resetPopovers();
+                self.availableOptions(_options);
+                self.availableOptions.valueHasMutated();
+                self.availableOptions.notifySubscribers();
+                resetPopovers();
             };
 
             self.clearSelections = function () {
-                self.options.removeAll();
-                self.remainingOptions(ko.unwrap(params.optionValues).slice(0)
-                .map(function (val) {
+                self.availableOptions.removeAll();
+                var ar = ko.unwrap(self.optionValues).slice(0);
+                $.each(ar, function (key, val) {
                     val.selected = ko.observable(false);
                     val.highlight = ko.observable(false);
-                    return val;
-                }));
+                });
+                self.remainingOptions(ar);
+                //self.remainingOptions(ko.unwrap(self.optionValues).slice(0)
+                //.map(function (val) {
+                //    return val;
+                //}));
                 self.remainingOptions.sort(function (a, b) {
                     return (a[self.optionsText] < b[self.optionsText]) ? -1 : (a[self.optionsText] > b[self.optionsText]) ? 1 : 0;
                 });
                 self.selectedOptions.removeAll();
                 self.filter();
-                self.resetPopovers();
+                //resetPopovers();
             };
 
             self.clearSelections();
 
-            self.clearHintText = function () {
+            function clearHintText() {
                 self.hintText('');
                 var pos = getCaret(self.input);
                 var s = $(self.input).val().substring(0, pos);
                 $(self.input).val(s);
             };
 
-            self.clearHighlights = function () {
-                $.each(self.options(), function (key, val) { val.highlight(false); });
+            function clearHighlights() {
+                $.each(self.availableOptions(), function (key, val) {
+                    val.highlight(false);
+                });
             };
 
             self.highlightNextItem = function () {
                 var _next = 0;
-                for (i = 0; i < self.options().length; i++) {
-                    if (self.options()[i].highlight()) {
-                        self.options()[i].highlight(false);
+                for (i = 0; i < self.availableOptions().length; i++) {
+                    if (self.availableOptions()[i].highlight()) {
+                        self.availableOptions()[i].highlight(false);
                         _next = i + 1;
                         break;
                     }
                 }
-                _next = _next > self.options().length - 1 ? 0 : _next;
-                self.options()[_next].highlight(true);
+                _next = _next > self.availableOptions().length - 1 ? 0 : _next;
+                self.availableOptions()[_next].highlight(true);
                 self.scrollTo();
             };
 
             self.highlightPrevItem = function () {
-                var _next = self.options().length - 1;
-                for (i = self.options().length - 1; i >= 0; i--) {
-                    if (self.options()[i].highlight()) {
-                        self.options()[i].highlight(false);
+                var _next = self.availableOptions().length - 1;
+                for (i = self.availableOptions().length - 1; i >= 0; i--) {
+                    if (self.availableOptions()[i].highlight()) {
+                        self.availableOptions()[i].highlight(false);
                         _next = i - 1;
                         break;
                     }
                 }
-                _next = _next < 0 ? self.options().length - 1 : _next;
-                self.options()[_next].highlight(true);
+                _next = _next < 0 ? self.availableOptions().length - 1 : _next;
+                self.availableOptions()[_next].highlight(true);
 
                 self.scrollTo();
             };
@@ -612,9 +638,9 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.cancelKey = true;
                     return false;
                 } else if (e.which == 32 && self.inKeyBoardMode) {
-                    for (i = 0; i < self.options().length; i++) {
-                        if (self.options()[i].highlight()) {
-                            self.selectItem(self.options()[i]);
+                    for (i = 0; i < self.availableOptions().length; i++) {
+                        if (self.availableOptions()[i].highlight()) {
+                            selectItem(self.availableOptions()[i]);
                             self.cancelKey = true;
                             break;
                         }
@@ -656,7 +682,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 if (self.hasSearchResults()) {
 
                     if (e.which == 13 || e.which == 9) {
-                        self.selectItem(self.options()[0]);
+                        selectItem(self.availableOptions()[0]);
                         self.clearAll();
                         self.cancelKey = true;
                     } else if (e.which == 27) {
@@ -695,9 +721,9 @@ define(["knockout", "jquery"], function (ko, $) {
 
                 }
                 else if (e.which == 9 || e.which == 13) {
-                    $.each(self.options(), function (key, val) {
+                    $.each(self.availableOptions(), function (key, val) {
                         if (val.highlight()) {
-                            self.selectItem(val);
+                            selectItem(val);
                             return false;
                         }
                     });
@@ -706,9 +732,9 @@ define(["knockout", "jquery"], function (ko, $) {
                     return;
                 }
                 else if (e.which == 32 && self.inKeyBoardMode) {
-                    for (i = 0; i < self.options().length; i++) {
-                        if (self.options()[i].highlight()) {
-                            self.selectItem(self.options()[i]);
+                    for (i = 0; i < self.availableOptions().length; i++) {
+                        if (self.availableOptions()[i].highlight()) {
+                            selectItem(self.availableOptions()[i]);
                             self.cancelKey = true;
                             break;
                         }
@@ -778,9 +804,9 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.cancelKey = true;
                     return false;
                 } else if (e.which == 32 && self.inKeyBoardMode) {
-                    for (i = 0; i < self.options().length; i++) {
-                        if (self.options()[i].highlight()) {
-                            self.selectItem(self.options()[i]);
+                    for (i = 0; i < self.availableOptions().length; i++) {
+                        if (self.availableOptions()[i].highlight()) {
+                            selectItem(self.availableOptions()[i]);
                             self.cancelKey = true;
                             break;
                         }
@@ -809,7 +835,7 @@ define(["knockout", "jquery"], function (ko, $) {
                 self.element.find(".dummy>input").show();
             };
 
-            self.showPopOver = function (data, e) {
+            function showPopOver(data, e) {
                 if (!self.popover()) {
                     return false;
                 }
@@ -834,15 +860,15 @@ define(["knockout", "jquery"], function (ko, $) {
                 }
             };
 
-            self.hoverItem = function ( e) {
+            function onOptionHover( e) {
                 var data = ko.dataFor(e.target);
-                self.clearHighlights();
+                clearHighlights();
                 data.highlight(true);
-                self.showPopOver(data, e);
+                showPopOver(data, e);
                 swallow(e);
             };
             
-            self.onMouseWheel = function (e) {
+            function onMouseWheel(e) {
                 $e = $(e.target);
                 $p = $e.parents('.options');
                 $p = $p.length > 0 ? $p : $e.parents('.selections');
@@ -884,8 +910,8 @@ define(["knockout", "jquery"], function (ko, $) {
             };
      
             self.selectAll = function () {
-                for (i = self.options().length-1; i >= 0; i--) {
-                    self.selectItem(self.options()[i]);
+                for (i = self.availableOptions().length-1; i >= 0; i--) {
+                    selectItem(self.availableOptions()[i]);
 
                 }
            };
@@ -920,7 +946,7 @@ define(["knockout", "jquery"], function (ko, $) {
                         });
                    
                }
-               self.resetPopovers();
+               resetPopovers();
        
 
                 self.element.find(".dummy>input").on('focus', function (e) {
@@ -940,7 +966,7 @@ define(["knockout", "jquery"], function (ko, $) {
                     self.element.find(".options li").popover('hide');
                     self.pillbox.removeClass('dropup');
                     self.clearAll();
-                    self.clearHighlights();
+                    clearHighlights();
                     self.inKeyBoardMode = false;
                     self.selStart = -1;
                     self.element.find(".dummy>input").focus();
@@ -952,8 +978,8 @@ define(["knockout", "jquery"], function (ko, $) {
                     if (self.dropdownRows()) {
                         self.itemHeight.valueHasMutated();
                         self.itemHeight.notifySubscribers();
-                    };
-                    self.clearHighlights();
+                    }
+                    clearHighlights();
                         $e = $(e.target);
                     if (self.typeAhead()) {
                         $e.find(".search>input")[0].focus();
@@ -978,12 +1004,12 @@ define(["knockout", "jquery"], function (ko, $) {
 
                 });
 
-                self.element.find(".selections").on("wheel", self.onMouseWheel);
-                self.element.find(".options").on("wheel", self.onMouseWheel);
+                self.element.find(".selections").on("wheel", onMouseWheel);
+                self.element.find(".options").on("wheel", onMouseWheel);
                 self.element.find(".options")
-                    .on("mouseover", "li", self.hoverItem)
-                    .on("click", "li", self.handleClick);
-                self.element.find(".selected-options").on("click",".btn>a.remover", self.removeItem);
+                    .on("mouseover", "li", onOptionHover)
+                    .on("click", "li", self.onOptionClick);
+                self.element.find(".selected-options").on("click", ".btn>a.remover", onRemovePillClick);
            };
 
            return {
@@ -991,7 +1017,8 @@ define(["knockout", "jquery"], function (ko, $) {
                deselectAll: self.deselectAll,
                init: self.init,
                option: self.option,
-               options: self.options,
+               availableOptions: self.availableOptions,
+               optionValues: self.optionValues,
                selectedOptions: self.selectedOptions
            }
 

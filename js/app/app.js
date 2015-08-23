@@ -135,22 +135,15 @@ function projectSetUpVm(data) {
 function param(name, value) {
     var self = this;
     self.name = name;
-    self.value = value;
+    self.value = ko.observable(value);
     self.visible = ko.observable();
-    self.html = ko.computed(function () {
-        var rslt = "";
-        '</span><span id="pillboxRows" class="param" data-bind="visible:pillboxRowsSet" style="display:none"><br />        <span class="param-text">pillboxRows:<span class="hljs-tag" data-bind="text:pillboxHeight"></span>,</span></span>'
-    });
+   
 };
 
 
 function paramvm() {
     var self = this;
     self.params = ko.observableArray();
-    self.html = ko.computed(function () {
-        var rslt = "";
-
-    });
 };
 require(["moment"], function (moment) {
 
@@ -219,11 +212,14 @@ require(["moment"], function (moment) {
                 self.pillboxRowsSet(self.pillboxHeight() > 0);
 
                 self.setPillboxRows();
+                highlightProperty("pillboxRows");
 
             });
+
             self.dropdownHeight.subscribe(function () {
                 self.dropdownRowsSet(self.dropdownHeight() > 0);
                 self.setRows();
+                highlightProperty("dropdownRows");
             });
 
             self.showTemplate = function (data, e) {
@@ -260,6 +256,7 @@ require(["moment"], function (moment) {
                     highlightProperty("dropdownRows");
                 }
             };
+
             var prevanimation = '';
             function highlightProperty(id) {
                 
@@ -289,13 +286,15 @@ require(["moment"], function (moment) {
             };
             self.setRows = function (data, e) {
                 $('#pb1').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? self.dropdownHeight():0);
-                $('#pb2').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? self.dropdownHeight():0);
+                $('#pb2').data('pillbox').option('dropdownRows', self.dropdownRowsSet() ? self.dropdownHeight() : 0);
+                self.allparams["dropdownRows"].value(self.dropdownHeight());
                // self.dropdownRowsSet(!self.dropdownRowsSet());
             };
 
             self.setPillboxRows = function (data, e) {
-                $('#pb1').data('pillbox').option('pillBoxRows', self.pillboxRowsSet() ? self.pillboxHeight(): 0  );
-                $('#pb2').data('pillbox').option('pillBoxRows', self.pillboxRowsSet() ? self.pillboxHeight() : 0);
+                $('#pb1').data('pillbox').option('pillboxRows', self.pillboxRowsSet() ? self.pillboxHeight(): 0  );
+                $('#pb2').data('pillbox').option('pillboxRows', self.pillboxRowsSet() ? self.pillboxHeight() : 0);
+                self.allparams["pillboxRows"].value(self.pillboxHeight());
                // self.pillboxRowsSet(!self.pillboxRowsSet());
             };
             self.setTypeAhead = function (data, e) {
@@ -389,6 +388,17 @@ require(["moment"], function (moment) {
                 self.disableSet(!self.disableSet());
                 $('#pb1').data('pillbox').option('disabled', self.disableSet());
                 $('#pb2').data('pillbox').option('disabled', self.disableSet());
+
+            };
+            self.addOption = function () {
+                $('#pb1').data('pillbox').optionValues.push({
+                    id: 13, text: "Bird on a Wire", description: "Rick Jarmin (Mel Gibson) is put in witness protection after he helps the FBI bust drug dealer Eugene Sorenson (David Carradine). Fifteen years later, he is living with a new identity as a gas station attendant", img: "images/movie15.jpg", cast: "Mel Gibson, Goldie Hawn, David Carradine ",
+                    director: "John Badham", rating: 5.8, year: 1990
+                });
+                $('#pb2').data('pillbox').optionValues.push({
+                    id: 13, text: "Bird on a Wire", description: "Rick Jarmin (Mel Gibson) is put in witness protection after he helps the FBI bust drug dealer Eugene Sorenson (David Carradine). Fifteen years later, he is living with a new identity as a gas station attendant", img: "images/movie15.jpg", cast: "Mel Gibson, Goldie Hawn, David Carradine ",
+                    director: "John Badham", rating: 5.8, year: 1990
+                });
                
             }
             $('#pillbox-options .btn').hover(function (e) {

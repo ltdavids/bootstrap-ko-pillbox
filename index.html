@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="index.html">Demo</a></li>
-                    <li><a href="examples.html">Examples</a></li>
+                    <!--<li><a href="examples.html">Examples</a></li>-->
 
                 </ul>
 
@@ -215,17 +215,22 @@
                     <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:deselectAll">
                         <span> De-Select All</span>
                     </button>
+                    <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:addOption">
+                        <span> Add Item</span>
+                    </button>
 
                 </div>
             </div>
 
             <div class="col-sm-10 col-sm-offset-1">
-
+              <!--  <pre><code data-bind="text:ko.toJSON(vm2)">
+                </code>
+            </pre>-->
                 <pre><code>&lt;pillbox class=&quot;form-control&quot;<span id="disable-option" data-bind="visible:disableSet"> disabled=&quot;disabled&quot; </span>
         params=&quot;optionValues:Movies,
         selectedOptions:SelectedMovies,
-        optionsText:&#39;text&#39;,<span data-bind="foreach:params">
-<span data-bind="attr:{id:name}" class="param">        <span class="param-text"><span data-bind="text:name">typeAhead</span>:<span data-bind="text:value">true</span><span data-bind="text:$parent.comma($data)"></span></span></span></span>&quot;&gt;
+        optionsText:&#39;text&#39;<span data-bind="text:comma()"></span><span data-bind="foreach:params">
+<span data-bind="attr:{id:name}" class="param">        <span class="param-text"><span data-bind="text:name"></span>:<span data-bind="text:value"></span><span data-bind="text:$parent.comma($data)"></span></span></span></span>&quot;&gt;
         Choose Movies&lt;/pillbox&gt;
         </code></pre>
             </div>
