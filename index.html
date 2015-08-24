@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="index.html">Demo</a></li>
-                    <!--<li><a href="examples.html">Examples</a></li>-->
+                    <li><a href="examples.html">Examples</a></li>
 
                 </ul>
 
@@ -130,22 +130,17 @@
             <div class="col-sm-4" id="pillbox-options">
                 <div style="text-align:center"><h3>Options</h3></div>
                 <div class="col-sm-7 ">
-                    <button type="button" data-option-name="optionTemplate" class="btn btn-default btn-check btn-block btn-sm" data-bind="click:showTemplate, css:{'btn-success':vm2.visible}">
-                        <div>
+                    <div type="button" data-option-name="optionTemplate" class="btn btn-default btn-check btn-block btn-sm" data-bind="click:showTemplate, css:{'btn-success':vm2.visible}">
                             <span class="glyphicon glyphicon-check" data-bind="visible:vm2.visible()" style="display:none"></span>
                             <span class="glyphicon glyphicon-unchecked" data-bind="visible:!vm2.visible()"></span>
                             <span> Option Template</span>
-                        </div>
-                    </button>
-                    <button type="button" data-option-name="popover" class="btn btn-default btn-check btn-block btn-sm" data-bind="click:setPopoverTemplate, css:{'btn-success':popoverSet}">
-                        <div>
+                     </div>
+                    <div type="button" data-option-name="popover" class="btn btn-default btn-check btn-block btn-sm" data-bind="click:setPopoverTemplate, css:{'btn-success':popoverSet}">
                             <span class="glyphicon glyphicon-check" data-bind="visible:popoverSet" style="display:none"></span>
                             <span class="glyphicon glyphicon-unchecked" data-bind="visible:!popoverSet()"></span>
                             <span> Popover</span>
-
-                        </div>
-                    </button>
-                    <div class="input-group input-group-sm btn-block">
+                    </div>
+                    <div class="input-group input-group-sm btn-block btn-check">
                         <span class="btn input-group-addon " data-option-name="dropdownRows" data-bind="click:toggleDropdownHeight, css:{'success':dropdownRowsSet}">
                             <span class="glyphicon glyphicon-check" data-bind="visible:dropdownRowsSet" style="display:none"></span>
                             <span class="glyphicon glyphicon-unchecked" data-bind="visible:!dropdownRowsSet()"></span>
@@ -155,7 +150,7 @@
                         <input type="number" class="form-control" data-bind="value:dropdownHeight" aria-label="...">
                     </div>
 
-                    <div class="input-group input-group-sm btn-block">
+                    <div class="input-group input-group-sm btn-block btn-check">
                         <span style="text-align:left;width:130px;" class="btn input-group-addon" data-option-name="pillboxRows" data-bind="click:togglePillboxHeight, css:{'success':pillboxRowsSet}">
                             <span class="glyphicon glyphicon-check" data-bind="visible:pillboxRowsSet" style="display:none"></span>
                             <span class="glyphicon glyphicon-unchecked" data-bind="visible:!pillboxRowsSet()"></span>
@@ -165,59 +160,59 @@
                         <input type="number" class="form-control" data-bind="value:pillboxHeight" aria-label="...">
                     </div>
 
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="hidePillbox" data-bind="click:setHidePillbox, css:{'btn-success':hidePillBoxSet}">
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="hidePillbox" data-bind="click:setHidePillbox, css:{'btn-success':hidePillBoxSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:hidePillBoxSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!hidePillBoxSet()"></span>
                         <span> Custom Pillbox</span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="multiple" data-bind="click:setMultiple, css:{'btn-success':multipleSet}">
+                    </div>
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="multiple" data-bind="click:setMultiple, css:{'btn-success':multipleSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:multipleSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!multipleSet()"></span>
                         <span> Multiple</span>
 
-                    </button>
+                    </div>
                 </div>
                 <div class="col-sm-5">
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="scrollbar" data-bind="click:setScrollbar, css:{'btn-success':scrollbarSet}">
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="scrollbar" data-bind="click:setScrollbar, css:{'btn-success':scrollbarSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:scrollbarSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!scrollbarSet()"></span>
                         <span> Hide Scrollbar</span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="showSelected" data-bind="click:setShowSelected, css:{'btn-success':showSelectedSet}">
+                    </div>
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="showSelected" data-bind="click:setShowSelected, css:{'btn-success':showSelectedSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:showSelectedSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!showSelectedSet()"></span>
                         <span> Show Selected</span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="typeAhead" data-bind="click:setTypeAhead, css:{'btn-success':typeAheadSet}">
+                    </div>
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="typeAhead" data-bind="click:setTypeAhead, css:{'btn-success':typeAheadSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:typeAheadSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!typeAheadSet()"></span>
                         <span> Type Ahead</span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="autoClose" data-bind="click:setAutoClose, css:{'btn-success':autoCloseSet}">
+                    </div>
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="autoClose" data-bind="click:setAutoClose, css:{'btn-success':autoCloseSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:autoCloseSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!autoCloseSet()"></span>
                         <span> Auto Close</span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="disable" data-bind="click:setDisable, css:{'btn-success':disableSet}">
+                    </div>
+                    <div type="button" class="btn btn-default btn-check btn-block btn-sm" data-option-name="disable" data-bind="click:setDisable, css:{'btn-success':disableSet}">
                         <span class="glyphicon glyphicon-check" data-bind="visible:disableSet" style="display:none"></span>
                         <span class="glyphicon glyphicon-unchecked" data-bind="visible:!disableSet()"></span>
                         <span> Disable</span>
 
-                    </button>
-                    <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:selectAll">
+                    </div>
+                    <div type="button" class="btn btn-default btn-block btn-sm" data-bind="click:selectAll">
                         <span> Select All</span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:deselectAll">
+                    </div>
+                    <div type="button" class="btn btn-default btn-block btn-sm" data-bind="click:deselectAll">
                         <span> De-Select All</span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-block btn-sm" data-bind="click:addOption">
+                    </div>
+                    <div type="button" class="btn btn-default btn-block btn-sm" data-bind="click:addOption">
                         <span> Add Item</span>
-                    </button>
+                    </div>
 
                 </div>
             </div>

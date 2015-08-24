@@ -12,9 +12,7 @@
             background-color: #f5f5f5;
         }
         span.param.syntax-change .param-text
-        /*,*/ 
-        /*span.param.syntax-change span.hljs-tag,*/ 
-        /*span.param.syntax-change span.hljs-value*/
+      
         {
             color:rgb(57, 179, 215);
             background-color:rgba(240, 250, 4, 0.47);
@@ -53,10 +51,7 @@
             padding:10px;
         }
         .btn-check{
-            /*display:inline-block;*/
-            text-align:left;
-            /*vertical-align:middle;*/
-            /*line-height:20px;*/
+            text-align:left; 
         }
        
        .navbar{
@@ -64,16 +59,7 @@
            border-radius:0;
            margin-bottom:0;
        }
-        .btn-check .glyphicon{
-            /*font-size:1.1em;*/
-            
-        }
-    
-        .btn-check span{
-            vertical-align:middle;
-            /*line-height:24px;*/
-            
-        }
+
         #pillbox-options{
                 margin-bottom: 20px;
         }
