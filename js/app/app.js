@@ -39,40 +39,40 @@ function projectSetUpVm(data) {
     instance.SelectedMovies = ko.observableArray();
     instance.Movies = [{
         id: 1, text: "Spiderman 2", description: "This is a short description of the movie", img: "images/movie1.jpg", cast: "Tobey Maguire, Kirsten Dunst, James Franco",
-        director: "Sam Raimi", rating: 7.3, year: 2004
+        director: "Sam Raimi", rating: 7.3, year: 2004, category:"Action/Adventure"
     },
                               {
                                   id: 2, text: "The Hunger Games Catching Fire", description: "Katniss Everdeen and Peeta Mellark become targets of the Capitol after their victory in the 74th Hunger Games sparks a rebellion in the Districts of Panem.", img: "images/movie6.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth",
-                                  director: "Francis Lawrence", rating: 7.7, year: 2013
+                                  director: "Francis Lawrence", rating: 7.7, year: 2013, category: "Action/Adventure"
                               },
                               {
                                   id: 11, text: "The Hunger Games",
                                   description: "Katniss Everdeen voluntarily takes her younger sister's place in the Hunger Games, a televised fight to the death in which two teenagers from each of the twelve Districts of Panem are chosen at random to compete.", img: "images/movie4.jpg", cast: "Jennifer Lawrence, Josh Hutcherson, Liam Hemsworth ",
-                                  director: "Gary Ross", rating: 7.3, year: 2012
+                                  director: "Gary Ross", rating: 7.3, year: 2012, category: "Action/Adventure"
                               },
                               {
                                   id: 9, text: "Iron Man", description: "After being held captive in an Afghan cave, an industrialist creates a unique weaponized suit of armor to fight evil.", img: "images/movie5.jpg", cast: "Robert Downey Jr., Gwyneth Paltrow, Terrence Howard ",
-                                  director: "Jon Favreau", rating: 7.9, year: 2008
+                                  director: "Jon Favreau", rating: 7.9, year: 2008, category: "Action/Adventure"
                               },
                               {
                                   id: 12, text: "The Matrix", description: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.", img: "images/movie7.jpg", cast: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss",
-                                  director: "The Wachowski Brothers", rating: 8.7, year: 1999
+                                  director: "The Wachowski Brothers", rating: 8.7, year: 1999, category: "Fantasy"
                               },
                               {
                                   id: 10, text: "Hancock", description: "Hancock is a superhero whose ill considered behavior regularly causes damage in the millions. He changes when one person he saves helps him improve his public image.", img: "images/movie8.jpg", cast: "Will Smith, Charlize Theron, Jason Bateman",
-                                  director: "Peter Berg", rating: 6.4, year: 2008
+                                  director: "Peter Berg", rating: 6.4, year: 2008, category: "Fantasy"
                               },
                               {
                                   id: 3, text: "Man of Steel", description: "Clark Kent, one of the last of an extinguished race disguised as an unremarkable human, is forced to reveal his identity when Earth is invaded by an army of survivors who threaten to bring the planet to the brink of destruction.", img: "images/movie9.jpg", cast: " Henry Cavill, Amy Adams, Michael Shannon",
-                                  director: "Zack Snyder", rating: 7.2, year: 2013
+                                  director: "Zack Snyder", rating: 7.2, year: 2013, category: "Fantasy"
                               },
                               {
                                   id: 4, text: "The Mummy Returns", description: "The mummified body of Imhotep is shipped to a museum in London, where he once again wakes and begins his campaign of rage and terror.", img: "images/movie10.jpg", cast: "Brendan Fraser, Rachel Weisz, John Hannah",
-                                  director: "Stephen Sommers", rating: 6.3, year: 2001
+                                  director: "Stephen Sommers", rating: 6.3, year: 2001, category: "Action/Adventure"
                               },
                               {
                                   id: 5, text: "X-Men Origins: Wolverine", description: "A look at Wolverine's early life, in particular his time with the government squad Team X and the impact it will have on his later years.", img: "images/movie11.jpg", cast: "Kathleen Barr, Michael Dobson, Brian Drummond",
-                                  director: "Gavin Hood", rating: 6.7, year: 2009
+                                  director: "Gavin Hood", rating: 6.7, year: 2009, category: "Action/Adventure"
                               },
                               {
                                   id: 6, text: "The Last Samuri", description: "An American military advisor embraces the Samurai culture he was hired to destroy after he is captured in battle.", img: "images/movie12.jpg", cast: "Tom Cruise, Ken Watanabe, Billy Connolly",
@@ -80,11 +80,11 @@ function projectSetUpVm(data) {
                               },
                               {
                                   id: 7, text: "Lord of the Rings: The Fellowship of the Ring", description: "A meek hobbit of the Shire and eight companions set out on a journey to Mount Doom to destroy the One Ring and the dark lord Sauron.", img: "images/movie13.jpg", cast: "Elijah Wood, Ian McKellen, Orlando Bloom",
-                                  director: "Peter Jackson", rating: 8.8, year: 2001
+                                  director: "Peter Jackson", rating: 8.8, year: 2001, category: "Fantasy"
                               },
                               {
                                   id: 8, text: "Gravity", description: "A medical engineer and an astronaut work together to survive after a catastrophe destroys their shuttle and leaves them adrift in orbit.", img: "images/movie14.jpg", cast: "Sandra Bullock, George Clooney, Ed Harris",
-                                  director: "Alfonso Cuarón", rating: 7.9, year: 2013
+                                  director: "Alfonso Cuarón", rating: 7.9, year: 2013, category: "Sci-Fi"
                               }
     ];
 
@@ -390,17 +390,19 @@ require(["moment"], function (moment) {
                 $('#pb2').data('pillbox').option('disabled', self.disableSet());
 
             };
+
             self.addOption = function () {
                 $('#pb1').data('pillbox').optionValues.push({
                     id: 13, text: "Bird on a Wire", description: "Rick Jarmin (Mel Gibson) is put in witness protection after he helps the FBI bust drug dealer Eugene Sorenson (David Carradine). Fifteen years later, he is living with a new identity as a gas station attendant", img: "images/movie15.jpg", cast: "Mel Gibson, Goldie Hawn, David Carradine ",
-                    director: "John Badham", rating: 5.8, year: 1990
+                    director: "John Badham", rating: 5.8, year: 1990, category: "Comedy"
                 });
                 $('#pb2').data('pillbox').optionValues.push({
                     id: 13, text: "Bird on a Wire", description: "Rick Jarmin (Mel Gibson) is put in witness protection after he helps the FBI bust drug dealer Eugene Sorenson (David Carradine). Fifteen years later, he is living with a new identity as a gas station attendant", img: "images/movie15.jpg", cast: "Mel Gibson, Goldie Hawn, David Carradine ",
-                    director: "John Badham", rating: 5.8, year: 1990
+                    director: "John Badham", rating: 5.8, year: 1990, category: "Comedy"
                 });
-               
-            }
+
+            };
+
             $('#pillbox-options .btn').hover(function (e) {
                 $e = $(e.target);
                 var b = $e.closest('.btn')[0];
