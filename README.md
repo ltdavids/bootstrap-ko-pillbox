@@ -5,6 +5,12 @@ A multi-select knockout component that plays nice with bootstrap.
 
 ## [Examples](http://http://ltdavids.github.io/bootstrap-ko-pillbox/examples)
 ## Usage
+```
+        ko.components.register('pillbox', {
+            viewModel: { require: 'pillbox' },
+            template: { require: 'text!../../src/pillbox.html' }
+        });
+```
 ```html
 <pillbox
     params="optionValues:Movies, selectedOptions:SelectedMovies, optionsText:'text'">
